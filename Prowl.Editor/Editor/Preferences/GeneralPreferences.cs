@@ -71,7 +71,7 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
     public double WindowRoundness = 10;
     public double TabRoundness = 10;
     public double AssetRoundness = 4;
-    public double ButtonRoundness = 4;
+    public double ButtonRoundness = 2;
 
     public enum NoodlePath { Straight, Curvy, Angled, ShaderLab }
     public enum NoodleStroke { Basic, Dashed }
