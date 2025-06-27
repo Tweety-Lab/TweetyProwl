@@ -92,15 +92,15 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
     public static Color Base11 => new(255, 255, 255);
 
     // Accents
-    public static Color Blue => new(39, 117, 255);
-    public static Color Green => new(80, 209, 178);
+    public static Color Blue => new(107, 144, 212);
+    public static Color Green => new(168, 204, 96);
     public static Color Violet => new(119, 71, 202);
     public static Color Orange => new(236, 140, 85);
     public static Color Yellow => new(236, 230, 99);
     public static Color Indigo => new(84, 21, 241);
     public static Color Emerald => new(94, 234, 141);
     public static Color Fuchsia => new(221, 80, 214);
-    public static Color Red => new(226, 55, 56);
+    public static Color Red => new(226, 110, 110);
     public static Color Sky => new(11, 214, 244);
     public static Color Pink => new(251, 123, 184);
 
