@@ -284,7 +284,7 @@ public class HierarchyWindow : EditorWindow
             HandleDrop(entity);
             DragnDrop.Drag(entity);
 
-            Color col = (interact.IsHovered() ? EditorStylePrefs.Instance.Hovering : Color.white * 0.5f) * colMult;
+            Color col = (interact.IsHovered() ? EditorStylePrefs.Instance.Hovering : new Color(0f, 0f, 0f, 0f)) * colMult;
             gui.Draw2D.DrawRectFilled(rect, (isSelected ? EditorStylePrefs.Instance.Highlighted : col), (float)EditorStylePrefs.Instance.ButtonRoundness);
 
             // if (entity.children.Count > 0)
