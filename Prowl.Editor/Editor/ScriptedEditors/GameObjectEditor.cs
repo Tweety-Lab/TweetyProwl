@@ -417,20 +417,12 @@ public class GameObjectEditor : ScriptedEditor
         IconAttribute? iconAttribute = cType.GetCustomAttribute<IconAttribute>();
         NameAttribute? nameAttribute = cType.GetCustomAttribute<NameAttribute>();
 
-        string? icon = iconAttribute?.IconCode;
-        string? name = nameAttribute?.Name;
+        string icon = iconAttribute?.IconCode ?? string.Empty;
+        string name = nameAttribute?.Name ?? cType.Name;
 
-        if (!string.IsNullOrEmpty(icon) && !string.IsNullOrEmpty(name))
-            return $"{icon}   {name}";
-
-        if (!string.IsNullOrEmpty(icon))
-            return icon;
-
-        if (!string.IsNullOrEmpty(name))
-            return name;
-
-        // Fallback
-        return cType.Name;
+        return !string.IsNullOrEmpty(icon)
+            ? $"{icon}   {name}"
+            : name;
     }
 
     private void HandleUnusedEditors(HashSet<int> editorsNeeded)
@@ -570,11 +562,21 @@ public class GameObjectEditor : ScriptedEditor
 
         (string Name, Type type)[] items = componentTypes.Select(type =>
         {
-            string Name = type.Name;
+            IconAttribute? iconAttribute = type.GetCustomAttribute<IconAttribute>();
+            NameAttribute? nameAttribute = type.GetCustomAttribute<NameAttribute>();
             AddComponentMenuAttribute? addToMenuAttribute = type.GetCustomAttribute<AddComponentMenuAttribute>();
-            if (addToMenuAttribute != null)
-                Name = addToMenuAttribute.Path;
-            return (Name, type);
+
+            string icon = iconAttribute?.IconCode ?? string.Empty;
+            string name =
+                nameAttribute?.Name ??
+                addToMenuAttribute?.Path ??
+                type.Name;
+
+            string displayName = !string.IsNullOrEmpty(icon)
+                ? $"{icon}   {name}"
+                : name;
+
+            return (displayName, type);
         }).ToArray();
 
 
@@ -636,11 +638,22 @@ public class GameObjectEditor : ScriptedEditor
         public MenuItemInfo(Type type)
         {
             Type = type;
-            Name = type.Name;
+
+            IconAttribute? iconAttribute = type.GetCustomAttribute<IconAttribute>();
+            NameAttribute? nameAttribute = type.GetCustomAttribute<NameAttribute>();
             AddComponentMenuAttribute? addToMenuAttribute = type.GetCustomAttribute<AddComponentMenuAttribute>();
-            if (addToMenuAttribute != null)
-                Name = addToMenuAttribute.Path;
+
+            string icon = iconAttribute?.IconCode ?? string.Empty;
+            string name =
+                nameAttribute?.Name ??
+                addToMenuAttribute?.Path ??
+                type.Name;
+
+            Name = !string.IsNullOrEmpty(icon)
+                ? $"{icon}   {name}"
+                : name;
         }
+
     }
 
     #endregion
