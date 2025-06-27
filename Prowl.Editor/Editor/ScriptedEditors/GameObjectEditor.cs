@@ -418,7 +418,7 @@ public class GameObjectEditor : ScriptedEditor
         NameAttribute? nameAttribute = cType.GetCustomAttribute<NameAttribute>();
 
         string icon = iconAttribute?.IconCode ?? string.Empty;
-        string name = nameAttribute?.Name ?? cType.Name;
+        string name = Path.GetFileName(nameAttribute?.Name) ?? cType.Name;
 
         return !string.IsNullOrEmpty(icon)
             ? $"{icon}   {name}"
@@ -572,9 +572,24 @@ public class GameObjectEditor : ScriptedEditor
                 addToMenuAttribute?.Path ??
                 type.Name;
 
-            string displayName = !string.IsNullOrEmpty(icon)
-                ? $"{icon}   {name}"
-                : name;
+            string displayName;
+
+            if (!string.IsNullOrEmpty(icon) && name.Contains('/'))
+            {
+                int lastSlash = name.LastIndexOf('/');
+                string prefix = name.Substring(0, lastSlash + 1);
+                string lastPart = name.Substring(lastSlash + 1);
+
+                displayName = $"{prefix}{icon} {lastPart}";
+            }
+            else if (!string.IsNullOrEmpty(icon))
+            {
+                displayName = $"{icon} {name}";
+            }
+            else
+            {
+                displayName = name;
+            }
 
             return (displayName, type);
         }).ToArray();
