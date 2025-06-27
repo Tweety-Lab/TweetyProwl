@@ -398,7 +398,11 @@ public class GameObjectEditor : ScriptedEditor
     private float DrawCompHeader(Type cType, bool compOpened)
     {
         float animState = gui.AnimateBool(compOpened, 0.1f, EaseType.Linear);
-        Color compColor = EditorStylePrefs.RandomPastelColor(cType.GetHashCode());
+
+        Color compColor = EditorStylePrefs.Instance.HeaderColor == EditorStylePrefs.ComponentHeaderColor.Flat
+            ? new Color(0.188f, 0.208f, 0.239f, 1f)
+            : EditorStylePrefs.RandomPastelColor(cType.GetHashCode());
+
         if (compOpened || animState > 0)
             gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, compColor, (float)EditorStylePrefs.Instance.ButtonRoundness, 3);
         else

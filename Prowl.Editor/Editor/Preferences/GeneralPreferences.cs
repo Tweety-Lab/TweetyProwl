@@ -75,6 +75,16 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
 
     public enum NoodlePath { Straight, Curvy, Angled, ShaderLab }
     public enum NoodleStroke { Basic, Dashed }
+
+    public enum ComponentHeaderColor
+    {
+        Flat,
+        Pastel
+    }
+
+    [Text("Component Headers:")]
+    public ComponentHeaderColor HeaderColor = ComponentHeaderColor.Flat;
+
     [Text("Node Editor:")]
     public NoodlePath NoodlePathType = NoodlePath.Curvy;
     public NoodleStroke NoodleStrokeType = NoodleStroke.Basic;
