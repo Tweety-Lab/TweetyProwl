@@ -370,7 +370,7 @@ public class GameObjectEditor : ScriptedEditor
             using (gui.Node("AddCompBtn").ExpandWidth().Height(ItemSize).Enter())
             {
                 gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, gui.IsNodeHovered() ? EditorStylePrefs.Violet : EditorStylePrefs.Instance.Highlighted, btnRoundness);
-                gui.Draw2D.DrawText("Add Component", gui.CurrentNode.LayoutData.InnerRect, Color.white, false);
+                gui.Draw2D.DrawText($"{FontAwesome6.PuzzlePiece}  Add Component", gui.CurrentNode.LayoutData.InnerRect, Color.white, false);
 
                 if (gui.IsNodePressed())
                     gui.OpenPopup("AddComponentPopup", null, gui.CurrentNode);
