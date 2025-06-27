@@ -54,7 +54,7 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
     public Color WindowBGOne = new(0.14814814925193787f, 0.15755437314510345f, 0.190476194024086f, 1.0f);
     public Color WindowBGTwo = new Color(25, 27, 32);
     public Color Borders = new(49, 52, 66);
-    public Color Hovering = Color.white * 0.8f;
+    public Color Hovering = new (0.27f, 0.29f, 0.33f, 0.80f);
     public Color Highlighted = new(25, 72, 133);
     public Color Ping = Yellow;
     public Color DropHighlight = Orange;
