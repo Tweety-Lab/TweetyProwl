@@ -144,7 +144,7 @@ internal class MenuItem : Attribute
                 Vector2 pos = Gui.ActiveGUI.PreviousNode.LayoutData.Rect.TopRight;
                 if (simpleRoot)
                     pos = Gui.ActiveGUI.PreviousNode.LayoutData.Rect.BottomLeft;
-                Gui.ActiveGUI.OpenPopup(menu.Path + "Popup", pos);
+                Gui.ActiveGUI.OpenPopup(menu.Path + "Popup", pos); 
             }
 
             // Enter the Button's Node
