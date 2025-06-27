@@ -160,7 +160,7 @@ public static class EditorGuiManager
                             PlayMode.Stop();
                         break;
                     case PlayMode.Mode.Paused:
-                        if (EditorGUI.StyledButton($"{FontAwesome6.Play}  PLAY", EditorStylePrefs.Instance.ItemSize * 2.5, EditorStylePrefs.Instance.ItemSize, false, tooltip: "Play"))
+                        if (EditorGUI.StyledButton($"{FontAwesome6.Play}  PLAY", EditorStylePrefs.Instance.ItemSize * 3, EditorStylePrefs.Instance.ItemSize, false, tooltip: "Play"))
                             PlayMode.Resume();
                         if (EditorGUI.StyledButton(FontAwesome6.Stop, EditorStylePrefs.Instance.ItemSize, EditorStylePrefs.Instance.ItemSize, false, EditorStylePrefs.Red, tooltip: "Stop"))
                             PlayMode.Stop();
