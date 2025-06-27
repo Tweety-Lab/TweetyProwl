@@ -69,7 +69,7 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
 
     [Text("Rounding:")]
     public double WindowRoundness = 10;
-    public double TabRoundness = 10;
+    public double TabRoundness = 4;
     public double AssetRoundness = 4;
     public double ButtonRoundness = 2;
 

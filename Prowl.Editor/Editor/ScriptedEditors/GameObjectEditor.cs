@@ -399,6 +399,7 @@ public class GameObjectEditor : ScriptedEditor
     {
         float animState = gui.AnimateBool(compOpened, 0.1f, EaseType.Linear);
 
+        // Header Colour
         Color compColor = EditorStylePrefs.Instance.HeaderColor == EditorStylePrefs.ComponentHeaderColor.Flat
             ? new Color(0.188f, 0.208f, 0.239f, 1f)
             : EditorStylePrefs.RandomPastelColor(cType.GetHashCode());
