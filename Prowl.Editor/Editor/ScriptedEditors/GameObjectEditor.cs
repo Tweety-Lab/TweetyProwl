@@ -343,6 +343,7 @@ public class GameObjectEditor : ScriptedEditor
                         foreach ((object target, FieldInfo field) change in subChanges.AllChanges)
                         {
                             Prefab.OnFieldChange(change.target, change.field.Name);
+
                             // Propagate changes to the main FieldChanges
                             changes.Add(change.target, change.field);
                         }
