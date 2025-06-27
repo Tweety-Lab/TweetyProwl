@@ -408,8 +408,29 @@ public class GameObjectEditor : ScriptedEditor
 
     private static string GetComponentDisplayName(Type cType)
     {
+        // Legacy Logic: AddComponentMenuAttribute
         AddComponentMenuAttribute? addToMenuAttribute = cType.GetCustomAttribute<AddComponentMenuAttribute>();
-        return addToMenuAttribute != null ? Path.GetFileName(addToMenuAttribute.Path) : cType.Name;
+        if (addToMenuAttribute != null)
+            return Path.GetFileName(addToMenuAttribute.Path);
+
+        // New Logic: IconAttribute / NameAttribute
+        IconAttribute? iconAttribute = cType.GetCustomAttribute<IconAttribute>();
+        NameAttribute? nameAttribute = cType.GetCustomAttribute<NameAttribute>();
+
+        string? icon = iconAttribute?.IconCode;
+        string? name = nameAttribute?.Name;
+
+        if (!string.IsNullOrEmpty(icon) && !string.IsNullOrEmpty(name))
+            return $"{icon}   {name}";
+
+        if (!string.IsNullOrEmpty(icon))
+            return icon;
+
+        if (!string.IsNullOrEmpty(name))
+            return name;
+
+        // Fallback
+        return cType.Name;
     }
 
     private void HandleUnusedEditors(HashSet<int> editorsNeeded)
