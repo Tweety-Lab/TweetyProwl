@@ -12,7 +12,7 @@ namespace Prowl.Runtime;
 /// <remarks>
 /// This attribute can only be applied to classes and cannot be used multiple times on the same class.
 /// </remarks>
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 public class AddComponentMenuAttribute : Attribute
 {
     /// <summary>
