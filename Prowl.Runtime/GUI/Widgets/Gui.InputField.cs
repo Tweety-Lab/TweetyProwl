@@ -94,9 +94,11 @@ public partial class Gui
                 var font = style.Font.IsAvailable ? style.Font.Res : Font.DefaultFont;
                 var fontsize = style.FontSize;
                 var render_pos = new Vector2(g.CurrentNode.LayoutData.InnerRect.x, g.CurrentNode.LayoutData.InnerRect.y);
-                // Center text vertically
-                //render_pos.y += (g.CurrentNode.LayoutData.InnerRect.height - fontsize) / 2;
-                render_pos.y += 3;
+                // Center text vertically (no idea if this actually works)
+
+                // Calculate height of a typical character
+                double textHeight = font.CalcTextSize("A", 0, int.MaxValue, fontsize).y;
+                render_pos.y += (g.CurrentNode.LayoutData.InnerRect.height - textHeight) / 2 - 6; // Small offset
                 render_pos.x += 5;
 
                 if (multiline)
@@ -139,8 +141,8 @@ public partial class Gui
         var fontsize = style.FontSize;
         var render_pos = new Vector2(g.CurrentNode.LayoutData.InnerRect.x, g.CurrentNode.LayoutData.InnerRect.y);
         // Center text vertically
-        //render_pos.y += (g.CurrentNode.LayoutData.InnerRect.height - fontsize) / 2;
-        render_pos.y += 3;
+        double textHeight = font.CalcTextSize("A", 0, int.MaxValue, fontsize).y;
+        render_pos.y += (g.CurrentNode.LayoutData.InnerRect.height - textHeight) / 2 - 6;
         render_pos.x += 5;
 
         bool justSelected = false;
