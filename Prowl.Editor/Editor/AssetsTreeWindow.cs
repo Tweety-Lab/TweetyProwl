@@ -120,9 +120,9 @@ public class AssetsTreeWindow : EditorWindow
             }
             else
             {
-                RenderRootFolder(true, AssetDatabase.GetRootFolderCache(2), Color.white * 0.5f);//EditorStylePrefs.RandomPastelColor(100)); // Assets Folder
-                RenderRootFolder(false, AssetDatabase.GetRootFolderCache(0), Color.white * 0.5f);//EditorStylePrefs.RandomPastelColor(200)); // Defaults Folder
-                RenderRootFolder(false, AssetDatabase.GetRootFolderCache(1), Color.white * 0.5f);//EditorStylePrefs.RandomPastelColor(500)); // Packages Folder
+                RenderRootFolder(true, AssetDatabase.GetRootFolderCache(2), new Color(0f, 0f, 0f, 0f));//EditorStylePrefs.RandomPastelColor(100)); // Assets Folder
+                RenderRootFolder(false, AssetDatabase.GetRootFolderCache(0), new Color(0f, 0f, 0f, 0f));//EditorStylePrefs.RandomPastelColor(200)); // Defaults Folder
+                RenderRootFolder(false, AssetDatabase.GetRootFolderCache(1), new Color(0f, 0f, 0f, 0f));//EditorStylePrefs.RandomPastelColor(500)); // Packages Folder
             }
 
             if (!SelectHandler.SelectedThisFrame && dropInteract.TakeFocus())
