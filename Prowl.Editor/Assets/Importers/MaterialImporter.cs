@@ -8,7 +8,7 @@ using Prowl.Runtime.Utils;
 
 namespace Prowl.Editor.Assets;
 
-[Importer("FileIcon.png", typeof(Material), ".mat")]
+[Importer("MaterialIcon.png", typeof(Material), ".mat")]
 public class MaterialImporter : ScriptedImporter
 {
     public override void Import(SerializedAsset ctx, FileInfo assetPath)
