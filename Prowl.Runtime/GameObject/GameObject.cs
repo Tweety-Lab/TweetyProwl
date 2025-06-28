@@ -627,6 +627,7 @@ public class GameObject : EngineObject, ISerializable, ICloneExplicit
     /// <returns>The component of type T, or null if not found.</returns>
     public T? GetComponent<T>() where T : MonoBehaviour => (T?)GetComponent(typeof(T));
 
+
     /// <summary>
     /// Gets the first component of the specified type attached to the GameObject.
     /// </summary>
@@ -643,6 +644,20 @@ public class GameObject : EngineObject, ISerializable, ICloneExplicit
                     return comp;
         return null;
     }
+
+    /// <summary>
+    /// Gets the first component of the specified type attached to the GameObject or creates it if it doesn't exist.
+    /// </summary>
+    /// <param name="type">The type of component to get or create.</param>
+    /// <returns>The MonoBehaviour component of the specified type.</returns>
+    public MonoBehaviour? GetOrAddComponent(Type type) => GetComponent(type) ?? AddComponent(type);
+
+    /// <summary>
+    /// Gets the first component of the specified type attached to the GameObject or creates it if it doesn't exist.
+    /// </summary>
+    /// <typeparam name="T">The type of component to get or create.</typeparam>
+    /// <returns>The component of type T.</returns>
+    public T? GetOrAddComponent<T>() where T : MonoBehaviour => (T?)GetOrAddComponent(typeof(T));
 
     /// <summary>
     /// Gets the component with the specified identifier attached to the GameObject.

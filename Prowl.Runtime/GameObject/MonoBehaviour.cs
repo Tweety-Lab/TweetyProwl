@@ -136,6 +136,8 @@ public abstract class MonoBehaviour : EngineObject
     public void RemoveSelf() => GameObject.RemoveComponent(this);
     /// <inheritdoc cref="GameObject.GetComponent{T}"/>"
     public T? GetComponent<T>() where T : MonoBehaviour => GameObject.GetComponent<T>();
+    /// <inheritdoc cref="GameObject.GetOrAddComponent{T}"/>
+    public T? GetOrAddComponent<T>() where T : MonoBehaviour, new() => GameObject.GetOrAddComponent<T>();
     /// <inheritdoc cref="GameObject.GetComponent(Type)"/>"
     public MonoBehaviour? GetComponent(Type type) => GameObject.GetComponent(type);
     /// <inheritdoc cref="GameObject.GetComponentByIdentifier(Guid)"/>"
