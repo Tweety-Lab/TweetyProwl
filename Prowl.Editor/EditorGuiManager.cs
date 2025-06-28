@@ -375,6 +375,7 @@ public static class EditorGuiManager
     [MenuItem("Create/3D/Capsule")] public static void Create_3D_Capsule() => CreateDefaultModel("Capsule", null);
     [MenuItem("Create/3D/Plane")] public static void Create_3D_Plane() => CreateDefaultModel("Plane", null);
     [MenuItem("Create/3D/Quad")] public static void Create_3D_Quad() => CreateDefaultModel("Quad", null);
+    [MenuItem("Create/3D/Cone")] public static void Create_3D_Cone() => CreateDefaultModel("Cone", null);
 
     private static void CreateDefaultModel(string name, Type? component)
     {

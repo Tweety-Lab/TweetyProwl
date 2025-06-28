@@ -1,0 +1,41 @@
+{
+  "$id": 1,
+  "version": 1,
+  "guid": "d1988239-62aa-4b76-848c-8e4762a1cd56",
+  "assetNames": [
+    "Cone",
+    "DefaultMaterial",
+    "Cone"
+  ],
+  "assetTypes": [
+    "Prowl.Runtime.GameObject",
+    "Prowl.Runtime.Material",
+    "Prowl.Runtime.Mesh"
+  ],
+  "lastModified": 5250553246226825365L,
+  "importer": {
+    "$id": 2,
+    "$type": "Prowl.Editor.Assets.ModelImporter",
+    "GenerateColliders": false,
+    "GenerateNormals": true,
+    "GenerateSmoothNormals": false,
+    "CalculateTangentSpace": true,
+    "MakeLeftHanded": false,
+    "FlipUVs": false,
+    "CullEmpty": false,
+    "OptimizeGraph": false,
+    "OptimizeMeshes": false,
+    "FlipWindingOrder": false,
+    "WeldVertices": false,
+    "InvertNormals": false,
+    "GlobalScale": false,
+    "UnitScale": 1F
+  },
+  "dependencies": [
+    "d1988239-62aa-4b76-848c-8e4762a1cd56",
+    "c98b2238-a97d-4e19-953a-234bd335712e",
+    "62097b04-f634-4bdf-9201-b32ab6e395cd",
+    "722ec819-d0d1-415c-9cf1-9b8858d48e61",
+    "8de575d2-1731-4774-a0bd-4a86b08d620e"
+  ]
+}
