@@ -191,7 +191,7 @@ public static class EditorGuiManager
                 DragSplitter.GetSplitterBounds(out var bmins, out var bmaxs, 4);
 
                 g.SetZIndex(11000);
-                g.Draw2D.DrawRectFilled(Rect.CreateFromMinMax(bmins, bmaxs), Color.yellow);
+                g.Draw2D.DrawRectFilled(Rect.CreateFromMinMax(bmins, bmaxs), EditorStylePrefs.Instance.Hovering);
                 g.SetZIndex(0);
 
                 if (!g.IsPointerDown(MouseButton.Left))
@@ -211,7 +211,7 @@ public static class EditorGuiManager
                             node.GetSplitterBounds(out var bmins, out var bmaxs, 4);
 
                             g.SetZIndex(11000);
-                            g.Draw2D.DrawRectFilled(Rect.CreateFromMinMax(bmins, bmaxs), Color.yellow);
+                            g.Draw2D.DrawRectFilled(Rect.CreateFromMinMax(bmins, bmaxs), EditorStylePrefs.Instance.Hovering);
                             g.SetZIndex(0);
 
                             if (g.IsPointerDown(MouseButton.Left))
