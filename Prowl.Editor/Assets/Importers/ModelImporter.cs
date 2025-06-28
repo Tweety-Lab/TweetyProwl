@@ -26,7 +26,7 @@ public class ModelImporter : ScriptedImporter
     public bool GenerateNormals = true;
     public bool GenerateSmoothNormals;
     public bool CalculateTangentSpace = true;
-    public bool MakeLeftHanded = true;
+    public bool MakeLeftHanded = false;
     public bool FlipUVs;
     public bool CullEmpty;
     public bool OptimizeGraph;
