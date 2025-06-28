@@ -68,7 +68,7 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
     public double DockSpacing = 3;
 
     [Text("Rounding:")]
-    public double WindowRoundness = 10;
+    public double WindowRoundness = 2;
     public double TabRoundness = 4;
     public double AssetRoundness = 4;
     public double ButtonRoundness = 2;
