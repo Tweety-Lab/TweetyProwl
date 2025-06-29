@@ -12,7 +12,12 @@ public class SteamMountingPreferences : ScriptableSingleton<SteamMountingPrefere
     [Tooltip("Should this game mount steam games?")]
     public bool UseSteamMounting = false;
 
+    [Header("Mounting")]
     [ShowIf("UseSteamMounting")]
     [Tooltip("List of game IDs to mount.")]
     public List<int> MountedGameIDs = new List<int>();
+
+    [ShowIf("UseSteamMounting")]
+    [Tooltip("Folder to save mounted asset references to.")]
+    public string AssetFolder = "Mounted";
 }
