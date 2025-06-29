@@ -9,20 +9,20 @@ namespace Prowl.Editor.Preferences;
 [FilePath("General.pref", FilePathAttribute.Location.EditorPreference)]
 public class GeneralPreferences : ScriptableSingleton<GeneralPreferences>
 {
-    [Header("General:")]
+    [Header("General")]
     public bool LockFPS = false;
     [ShowIf("LockFPS")]
     public int TargetFPS = 0;
     [ShowIf("LockFPS", true)]
     public bool VSync = true;
 
-    [Header("Debugging:")]
+    [Header("Debugging")]
     public bool ShowDebugLogs = true;
     public bool ShowDebugWarnings = true;
     public bool ShowDebugErrors = true;
     public bool ShowDebugSuccess = true;
 
-    [Header("Game View:")]
+    [Header("Game View")]
     public bool AutoFocusGameView = true;
     public bool AutoRefreshGameView = true;
     public GameWindow.Resolutions Resolution = GameWindow.Resolutions.fit;
@@ -36,10 +36,10 @@ public class GeneralPreferences : ScriptableSingleton<GeneralPreferences>
 [FilePath("Editor.pref", FilePathAttribute.Location.EditorPreference)]
 public class EditorPreferences : ScriptableSingleton<EditorPreferences>
 {
-    [Header("UI:")]
+    [Header("UI")]
     public bool AntiAliasing = true;
 
-    [Header("File Editor:")]
+    [Header("File Editor")]
     public string fileEditor = "";     // code
     public string fileEditorArgs = ""; // "${ProjectDirectory}" -g "${File}":${Line}:${Character}
 }
@@ -47,7 +47,7 @@ public class EditorPreferences : ScriptableSingleton<EditorPreferences>
 [FilePath("EditorStyle.pref", FilePathAttribute.Location.EditorPreference)]
 public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
 {
-    [Header("Colors:")]
+    [Header("Colors")]
     public double Disabled = 0.7;
     public Color LesserText = new(110, 110, 120);
     public Color Background = new(15, 15, 18);
@@ -60,14 +60,14 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
     public Color DropHighlight = Orange;
     public Color Warning = Red;
 
-    [Header("Sizing:")]
+    [Header("Sizing")]
     public double Scale = 1;
     public double ItemSize = 25;
 
-    [Header("Spacing:")]
+    [Header("Spacing")]
     public double DockSpacing = 3;
 
-    [Header("Rounding:")]
+    [Header("Rounding")]
     public double WindowRoundness = 2;
     public double TabRoundness = 4;
     public double AssetRoundness = 4;
@@ -82,10 +82,10 @@ public class EditorStylePrefs : ScriptableSingleton<EditorStylePrefs>
         Pastel
     }
 
-    [Header("Component Headers:")]
+    [Header("Component Headers")]
     public ComponentHeaderColor HeaderColor = ComponentHeaderColor.Flat;
 
-    [Header("Node Editor:")]
+    [Header("Node Editor")]
     public NoodlePath NoodlePathType = NoodlePath.Curvy;
     public NoodleStroke NoodleStrokeType = NoodleStroke.Basic;
     public double NoodleStrokeWidth = 4;

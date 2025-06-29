@@ -9,9 +9,10 @@ namespace Prowl.Editor.Preferences;
 [FilePath("AssetPipeline.pref", FilePathAttribute.Location.EditorPreference)]
 public class AssetPipelinePreferences : ScriptableSingleton<AssetPipelinePreferences>
 {
-    [Header("Asset Browser:")]
+    [Header("Asset Browser")]
     public bool HideExtensions = true;
     public float ThumbnailSize = 0.0f;
-    [Header("Pipeline:")]
+
+    [Header("Pipeline")]
     public bool AutoImport = true;
 }
