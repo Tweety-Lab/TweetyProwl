@@ -98,6 +98,18 @@ public static partial class AssetDatabase
         rootFolders.Add((info, new AssetDirectoryCache(info)));
     }
 
+    public static void AddExternalRootFolder(DirectoryInfo externalRoot)
+    {
+        if (!externalRoot.Exists)
+            throw new DirectoryNotFoundException($"External root does not exist: {externalRoot.FullName}");
+
+        if (rootFolders.Any(x => x.Item1.FullName.Equals(externalRoot.FullName, StringComparison.OrdinalIgnoreCase)))
+            throw new ArgumentException("Root Folder already exists in the Asset Database");
+
+        rootFolders.Add((externalRoot, new AssetDirectoryCache(externalRoot)));
+    }
+
+
     /// <summary>
     /// Prevents the AssetDatabase from updating.
     /// </summary>
