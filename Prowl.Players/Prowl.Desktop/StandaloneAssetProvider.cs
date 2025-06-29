@@ -2,6 +2,7 @@
 
 using Prowl.Runtime;
 using Prowl.Runtime.Utils;
+using Prowl.Runtime.Utils.Steam;
 
 namespace Prowl.Desktop;
 
@@ -11,6 +12,7 @@ public class StandaloneAssetProvider : IAssetProvider
 
     public StandaloneAssetProvider()
     {
+
         int packageIndex = 0;
         FileInfo firstPackage = new FileInfo(Path.Combine(DesktopPlayer.Data.FullName, $"Data{packageIndex++}.prowl"));
         List<AssetBundle> assetBundles = [];
@@ -38,6 +40,7 @@ public class StandaloneAssetProvider : IAssetProvider
                 _loaded[guid] = asset!;
                 return (T)(fileID == 0 ? asset!.Main! : asset!.SubAssets[fileID - 1]);
             }
+
         throw new FileNotFoundException($"Asset with path {relativeAssetPath} not found.");
     }
 

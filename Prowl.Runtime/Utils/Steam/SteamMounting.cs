@@ -1,24 +1,18 @@
 ﻿// This file is part of the Prowl Game Engine
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Prowl.Runtime.SteamMounting;
+namespace Prowl.Runtime.Utils.Steam;
 
 /// <summary>
-/// Interaction with Steam Game mounting.
+/// Interaction with Steam game mounting.
 /// </summary>
 public static class SteamMounting
 {
     /// <summary>
-    /// All registered GameMounters.
+    /// List of mounted Steam games.
     /// </summary>
-    public static List<GameMounter> Mounters { get; set; } = new List<GameMounter>();
-
-    static SteamMounting()
-    {
-        new PortalMounter();
-    }
+    public static Dictionary<int, DirectoryInfo> MountedGames { get; set; } = new(); // AppID -> Directory
 }
