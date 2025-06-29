@@ -3,6 +3,7 @@
 
 using System.Reflection;
 
+using Prowl.Editor.Editor.Preferences;
 using Prowl.Editor.Preferences;
 using Prowl.Editor.ProjectSettings;
 using Prowl.Icons;
@@ -40,6 +41,7 @@ public class PreferencesWindow : SingletonEditorWindow
         RenderSideViewElement(EditorStylePrefs.Instance);
         RenderSideViewElement(AssetPipelinePreferences.Instance);
         RenderSideViewElement(SceneViewPreferences.Instance);
+        RenderSideViewElement(SteamMountingPreferences.Instance);
     }
 }
 
@@ -91,7 +93,7 @@ public abstract class SingletonEditorWindow : EditorWindow
                 gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Hovering, (float)EditorStylePrefs.Instance.ButtonRoundness);
 
             // remove 'Preferences'
-            string name = settingType.Name.Replace("Preferences", "");
+            string name = RuntimeUtils.Prettify(settingType.Name.Replace("Preferences", ""));
             gui.Draw2D.DrawText(name, gui.CurrentNode.LayoutData.Rect, false);
 
             if (gui.IsNodePressed() || currentType == settingType)
@@ -110,7 +112,7 @@ public abstract class SingletonEditorWindow : EditorWindow
         // Draw Settings
         object setting = currentSingleton;
 
-        string name = currentType.Name.Replace("Preferences", "");
+        string name = RuntimeUtils.Prettify(currentType.Name.Replace("Preferences", ""));
         if (PropertyGrid(name, ref setting, TargetFields.Serializable | TargetFields.Properties, PropertyGridConfig.NoBorder | PropertyGridConfig.NoBackground))
         {
             // Use reflection to find a method "protected void Save()" and OnValidate
