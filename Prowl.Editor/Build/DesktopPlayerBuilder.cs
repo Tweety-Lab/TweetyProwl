@@ -31,8 +31,8 @@ public class Desktop_Player : ProjectBuilder
 
     public enum AssetPacking
     {
-        [Text("All Assets")] All,
-        [Text("Used Assets")] Used
+        [Header("All Assets")] All,
+        [Header("Used Assets")] Used
     }
 
     public AssetPacking assetPacking = AssetPacking.Used;

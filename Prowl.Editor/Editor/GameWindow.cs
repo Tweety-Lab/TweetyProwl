@@ -16,20 +16,20 @@ public class GameWindow : EditorWindow
 {
     public enum Resolutions
     {
-        [Text("Fit")] fit = 0,
-        [Text("Custom")] custom,
-        [Text("16:9 480p")] _480p,
-        [Text("16:9 720p")] _720p,
-        [Text("16:9 1080p")] _1080p,
-        [Text("16:9 1440p")] _1440p,
-        [Text("16:9 2160p")] _2160p,
-        [Text("16:9 4320p")] _4320p,
-        [Text("4:3 480p")] _480p_4_3,
-        [Text("4:3 720p")] _720p_4_3,
-        [Text("4:3 1080p")] _1080p_4_3,
-        [Text("4:3 1440p")] _1440p_4_3,
-        [Text("4:3 2160p")] _2160p_4_3,
-        [Text("4:3 4320p")] _4320p_4_3,
+        [Header("Fit")] fit = 0,
+        [Header("Custom")] custom,
+        [Header("16:9 480p")] _480p,
+        [Header("16:9 720p")] _720p,
+        [Header("16:9 1080p")] _1080p,
+        [Header("16:9 1440p")] _1440p,
+        [Header("16:9 2160p")] _2160p,
+        [Header("16:9 4320p")] _4320p,
+        [Header("4:3 480p")] _480p_4_3,
+        [Header("4:3 720p")] _720p_4_3,
+        [Header("4:3 1080p")] _1080p_4_3,
+        [Header("4:3 1440p")] _1440p_4_3,
+        [Header("4:3 2160p")] _2160p_4_3,
+        [Header("4:3 4320p")] _4320p_4_3,
     }
 
     const int HeaderHeight = 27;

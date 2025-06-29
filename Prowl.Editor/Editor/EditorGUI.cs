@@ -457,8 +457,8 @@ public static class EditorGUI
                     ActiveGUI.Node("Space" + id, guiAttribute.GetHashCode()).ExpandWidth().Height(ItemSize);
                     break;
 
-                case GuiAttribType.Text:
-                    var text = guiAttribute as TextAttribute;
+                case GuiAttribType.Header:
+                    var text = guiAttribute as HeaderAttribute;
                     ActiveGUI.TextNode("Label" + id, text.text).ExpandWidth().Height(ItemSize);
                     break;
 

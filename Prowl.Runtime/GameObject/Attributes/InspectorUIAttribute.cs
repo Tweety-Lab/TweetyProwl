@@ -10,7 +10,7 @@ namespace Prowl.Runtime;
 /// <summary>
 /// Enumerates the types of GUI attributes available for use in the Prowl Game Engine's inspector.
 /// </summary>
-public enum GuiAttribType { Space, Text, Separator, ShowIf, Tooltip, Button }
+public enum GuiAttribType { Space, Header, Separator, ShowIf, Tooltip, Button }
 
 /// <summary>
 /// Defines the interface for inspector UI attributes in the Prowl Game Engine.
@@ -26,10 +26,10 @@ public interface InspectorUIAttribute
 
 
 /// <summary>
-/// Adds a text label in the inspector UI.
+/// Adds a text header label in the inspector UI.
 /// </summary>
 [AttributeUsage(T.Field, AllowMultiple = true)]
-public class TextAttribute : Attribute, InspectorUIAttribute
+public class HeaderAttribute : Attribute, InspectorUIAttribute
 {
     /// <summary>
     /// The text to display in the inspector.
@@ -40,9 +40,9 @@ public class TextAttribute : Attribute, InspectorUIAttribute
     /// Initializes a new instance of the TextAttribute class.
     /// </summary>
     /// <param name="text">The text to display in the inspector.</param>
-    public TextAttribute(string text) => this.text = text;
+    public HeaderAttribute(string text) => this.text = text;
 
-    public GuiAttribType AttribType() => GuiAttribType.Text;
+    public GuiAttribType AttribType() => GuiAttribType.Header;
 }
 
 /// <summary>

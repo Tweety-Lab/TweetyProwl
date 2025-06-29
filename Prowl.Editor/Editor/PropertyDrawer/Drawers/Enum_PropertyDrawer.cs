@@ -22,7 +22,7 @@ public class Enum_PropertyDrawer : PropertyDrawer
         for (int i = 0; i < values.Length; i++)
         {
             FieldInfo fieldInfo = targetType.GetField(values.GetValue(i).ToString());
-            TextAttribute attribute = fieldInfo.GetCustomAttribute<TextAttribute>();
+            HeaderAttribute attribute = fieldInfo.GetCustomAttribute<HeaderAttribute>();
             names[i] = RuntimeUtils.Prettify(attribute != null ? attribute.text : fieldInfo.Name);
         }
 
