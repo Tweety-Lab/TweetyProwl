@@ -13,7 +13,7 @@ namespace Prowl.Editor.Assets.Importers.Source;
 /// <summary>
 /// All VTF image formats supported by Source engine.
 /// </summary>
-public enum ImageFormat
+public enum VTFFormat
 {
     IMAGE_FORMAT_NONE = -1,
     IMAGE_FORMAT_RGBA8888 = 0,
@@ -116,10 +116,10 @@ public class VTFImporter : ScriptedImporter
         reader.ReadBytes(4); // Padding
 
         float bumpmapScale = reader.ReadSingle();
-        ImageFormat highResImageFormat = (ImageFormat)reader.ReadInt32();
+        VTFFormat highResImageFormat = (VTFFormat)reader.ReadInt32();
         byte mipmapCount = reader.ReadByte();
 
-        ImageFormat lowResImageFormat = (ImageFormat)reader.ReadInt32();
+        VTFFormat lowResImageFormat = (VTFFormat)reader.ReadInt32();
         byte lowResImageWidth = reader.ReadByte();
         byte lowResImageHeight = reader.ReadByte();
 
@@ -143,7 +143,7 @@ public class VTFImporter : ScriptedImporter
             }
         }
 
-        var texture = new Texture2D(width, height);
+        var texture = new Texture2D(width, height, format: GetVeldridPixelFormat(highResImageFormat));
 
         if (version >= 7.3f)
         {
@@ -154,24 +154,80 @@ public class VTFImporter : ScriptedImporter
             stream.Seek(highRes.Offset, SeekOrigin.Begin);
         }
 
-        int imageSize = width * height * 4;
-        var pixels = reader.ReadBytes(imageSize);
-        texture.SetData<byte>(pixels);
+        int bytesPerPixel = 4; // Assuming uncompressed format
+        int imageSize = width * height * bytesPerPixel;
 
+        byte[] pixels = reader.ReadBytes(imageSize);
+        if (pixels.Length != imageSize)
+            throw new InvalidDataException($"Unexpected pixel data size. Expected {imageSize}, got {pixels.Length}");
+
+        texture.SetData<byte>(pixels);
         return texture;
     }
 
     /// <summary>
     /// Converts an ImageFormat to a Veldrid PixelFormat.
     /// </summary>
-    public static Veldrid.PixelFormat GetVeldridPixelFormat(ImageFormat format) =>
+    public static Veldrid.PixelFormat GetVeldridPixelFormat(VTFFormat format) =>
         format switch
         {
-            ImageFormat.IMAGE_FORMAT_RGBA8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            // 32-bit formats with alpha
+            VTFFormat.IMAGE_FORMAT_RGBA8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_BGRA8888 => Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+
+            // 16-bit float format with alpha
+            VTFFormat.IMAGE_FORMAT_RGBA16161616F => Veldrid.PixelFormat.R16_G16_B16_A16_Float,
+
+            // 16-bit unsigned normalized RGBA
+            VTFFormat.IMAGE_FORMAT_RGBA16161616 => Veldrid.PixelFormat.R16_G16_B16_A16_UNorm,
+
+            // Compressed formats
+            VTFFormat.IMAGE_FORMAT_DXT1 => Veldrid.PixelFormat.BC1_Rgba_UNorm,
+            VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => Veldrid.PixelFormat.BC1_Rgba_UNorm,
+            VTFFormat.IMAGE_FORMAT_DXT3 => Veldrid.PixelFormat.BC2_UNorm,
+            VTFFormat.IMAGE_FORMAT_DXT5 => Veldrid.PixelFormat.BC3_UNorm,
+
+            // Single channel grayscale
+            VTFFormat.IMAGE_FORMAT_I8 => Veldrid.PixelFormat.R8_UNorm,
+
+            // Two channel (Intensity + Alpha)
+            VTFFormat.IMAGE_FORMAT_IA88 => Veldrid.PixelFormat.R8_G8_UNorm,
+
+            // 24-bit RGB (no alpha) - no exact 24-bit RGB in Veldrid,
+            // fallback to R8_G8_B8_A8_UNorm and handle alpha=1 in shader or code
+            VTFFormat.IMAGE_FORMAT_RGB888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_BGR888 => Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+
+            // 16-bit packed RGB565 (no alpha)
+            VTFFormat.IMAGE_FORMAT_RGB565 => Veldrid.PixelFormat.R16_UNorm, // no direct RGB565 in Veldrid, fallback to R16_UNorm (or handle manually)
+            VTFFormat.IMAGE_FORMAT_BGR565 => Veldrid.PixelFormat.R16_UNorm,
+
+            // 16-bit packed BGRA4444 or BGRA5551 - no direct equivalent in Veldrid, fallback
+            VTFFormat.IMAGE_FORMAT_BGRA4444 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_BGRA5551 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_BGRX5551 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+
+            // Palettized / unknown formats fallback
+            VTFFormat.IMAGE_FORMAT_P8 => Veldrid.PixelFormat.R8_UNorm,
+            VTFFormat.IMAGE_FORMAT_A8 => Veldrid.PixelFormat.R8_UNorm,
+
+            // UV formats fallback to RG formats or 4 channels depending on assumed layout
+            VTFFormat.IMAGE_FORMAT_UV88 => Veldrid.PixelFormat.R8_G8_UNorm,
+            VTFFormat.IMAGE_FORMAT_UVWQ8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_UVLX8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+
+            // Bluescreen formats fallback to RGB888 variants with alpha = 1
+            VTFFormat.IMAGE_FORMAT_RGB888_BLUESCREEN => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_BGR888_BLUESCREEN => Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+
+            // None / unknown
+            VTFFormat.IMAGE_FORMAT_NONE => throw new InvalidDataException("VTF format NONE is invalid for pixel data."),
+
+            // Default fallback
             _ => LogAndFallback(format)
         };
 
-    private static Veldrid.PixelFormat LogAndFallback(ImageFormat format)
+    private static Veldrid.PixelFormat LogAndFallback(VTFFormat format)
     {
         Console.Error.WriteLine($"[VTFImporter] Unsupported VTF format: {format}");
         return Veldrid.PixelFormat.R8_UNorm;
