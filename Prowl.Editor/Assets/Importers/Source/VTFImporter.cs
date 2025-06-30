@@ -46,13 +46,13 @@ public enum ImageFormat
 [Importer("FileIcon.png", typeof(Texture2D), ".vtf")]
 public class VTFImporter : ScriptedImporter
 {
+    private record struct VTFResource(string Tag, byte Flags, uint Offset);
 
     public override void Import(SerializedAsset ctx, FileInfo assetPath)
     {
         Texture2D texture = LoadVTFTexture(assetPath);
         ctx.SetMainObject(texture);
     }
-
 
     /// <summary>
     /// Loads a VTF file and converts it into a Texture2D.
@@ -101,24 +101,44 @@ public class VTFImporter : ScriptedImporter
         byte lowResImageWidth = reader.ReadByte();
         byte lowResImageHeight = reader.ReadByte();
 
-        // Version 7.2+
-        ushort depth = 1;
-        if (version >= 7.2f)
-            depth = reader.ReadUInt16();
+        ushort depth = version >= 7.2f ? reader.ReadUInt16() : (ushort)1;
 
-        // Version 7.3+
+        List<VTFResource> resources = new();
+
         if (version >= 7.3f)
         {
             reader.BaseStream.Seek(3, SeekOrigin.Current);  // padding2[3]
-            uint numResources = reader.ReadUInt32();        // number of resources
-
+            uint numResources = reader.ReadUInt32();
             reader.BaseStream.Seek(8, SeekOrigin.Current);  // padding3[8]
+
+            for (int i = 0; i < numResources; i++)
+            {
+                byte[] tagBytes = reader.ReadBytes(3);
+                string tag = Encoding.ASCII.GetString(tagBytes);
+                byte flags2 = reader.ReadByte();
+                uint offset = reader.ReadUInt32();
+                resources.Add(new(tag, flags2, offset));
+            }
         }
 
         var texture = new Texture2D(width, height)
         {
             Name = Path.GetFileNameWithoutExtension(assetPath.Name)
         };
+
+
+        if (version >= 7.3f)
+        {
+            var highRes = resources.FirstOrDefault(r => r.Tag == "\x30\0\0");
+            if (highRes == default)
+                throw new InvalidDataException("Missing high-res image resource.");
+
+            stream.Seek(highRes.Offset, SeekOrigin.Begin);
+        }
+
+        int imageSize = width * height * 4;
+        var pixels = reader.ReadBytes(imageSize);
+        texture.SetData<byte>(pixels);
 
         return texture;
     }
