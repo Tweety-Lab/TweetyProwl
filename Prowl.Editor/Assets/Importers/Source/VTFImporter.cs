@@ -71,18 +71,21 @@ public class VTFImporter : ScriptedImporter
             throw new InvalidDataException("Invalid VTF file signature.");
 
         // Read version
-        uint versionMajor = reader.ReadUInt16();
-        uint versionMinor = reader.ReadUInt16();
-        float version = versionMajor + versionMinor / 100f; // Store version as float so we can do checks like "if (version >= 1.1)"
+        uint versionMajor = reader.ReadUInt32(); // version[0]
+        uint versionMinor = reader.ReadUInt32(); // version[1]
+        string versionStr = $"{versionMajor}.{versionMinor}";
+        float version = float.Parse(versionStr, System.Globalization.CultureInfo.InvariantCulture); // Store version as float so we can do checks like "if (version >= 7.5)"
 
         Console.WriteLine($"[VTFImporter] Loading: {assetPath.Name} (v{version})");
 
         uint headerSize = reader.ReadUInt32();
 
+        // Image dimensions
         ushort width = reader.ReadUInt16();
         ushort height = reader.ReadUInt16();
 
-        uint flags = reader.ReadUInt16();
+        // Image metadata
+        uint flags = reader.ReadUInt32();
         ushort frames = reader.ReadUInt16();
         ushort firstFrame = reader.ReadUInt16();
 
@@ -94,7 +97,24 @@ public class VTFImporter : ScriptedImporter
         ImageFormat highResImageFormat = (ImageFormat)reader.ReadInt32();
         byte mipmapCount = reader.ReadByte();
 
-        // var pixelFormat = GetVeldridPixelFormat(highResImageFormat);
+        ImageFormat lowResImageFormat = (ImageFormat)reader.ReadInt32();
+        byte lowResImageWidth = reader.ReadByte();
+        byte lowResImageHeight = reader.ReadByte();
+
+        // Version 7.2+
+        ushort depth = 1;
+        if (version >= 7.2f)
+            depth = reader.ReadUInt16();
+
+        // Version 7.3+
+        if (version >= 7.3f)
+        {
+            reader.BaseStream.Seek(3, SeekOrigin.Current);  // padding2[3]
+            uint numResources = reader.ReadUInt32();        // number of resources
+
+            reader.BaseStream.Seek(8, SeekOrigin.Current);  // padding3[8]
+        }
+
         var texture = new Texture2D(width, height)
         {
             Name = Path.GetFileNameWithoutExtension(assetPath.Name)
