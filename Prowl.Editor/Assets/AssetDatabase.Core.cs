@@ -106,7 +106,10 @@ public static partial class AssetDatabase
         if (rootFolders.Any(x => x.Item1.FullName.Equals(externalRoot.FullName, StringComparison.OrdinalIgnoreCase)))
             throw new ArgumentException("Root Folder already exists in the Asset Database");
 
-        rootFolders.Add((externalRoot, new AssetDirectoryCache(externalRoot)));
+        var cache = new AssetDirectoryCache(externalRoot);
+        cache.Refresh(); // For some reason we need to refresh the cache for external roots
+
+        rootFolders.Add((externalRoot, cache));
     }
 
 

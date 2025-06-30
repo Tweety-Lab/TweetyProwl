@@ -120,9 +120,9 @@ public class AssetsTreeWindow : EditorWindow
             }
             else
             {
-                RenderRootFolder(true, AssetDatabase.GetRootFolderCache(2), new Color(0f, 0f, 0f, 0f));//EditorStylePrefs.RandomPastelColor(100)); // Assets Folder
-                RenderRootFolder(false, AssetDatabase.GetRootFolderCache(0), new Color(0f, 0f, 0f, 0f));//EditorStylePrefs.RandomPastelColor(200)); // Defaults Folder
-                RenderRootFolder(false, AssetDatabase.GetRootFolderCache(1), new Color(0f, 0f, 0f, 0f));//EditorStylePrefs.RandomPastelColor(500)); // Packages Folder
+                // Render all root folders (assets, defaults, packages, etc.)
+                for (int i = 0; i < AssetDatabase.GetRootFolders().Count; i++)
+                    RenderRootFolder(false, AssetDatabase.GetRootFolderCache(i), new Color(0f, 0f, 0f, 0f));
             }
 
             if (!SelectHandler.SelectedThisFrame && dropInteract.TakeFocus())
