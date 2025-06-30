@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
 using System.Text;
+
 using Prowl.Runtime;
+using Prowl.Runtime.GUI;
 using Prowl.Runtime.Rendering;
 using Prowl.Runtime.Utils;
 
@@ -46,11 +48,31 @@ public enum ImageFormat
 [Importer("FileIcon.png", typeof(Texture2D), ".vtf")]
 public class VTFImporter : ScriptedImporter
 {
+    [Header("VTF")]
+    public TextureWrapMode TextureWrap = TextureWrapMode.Wrap;
+
+    public enum MipmapGenerationMode { Default, DontGenerate, GenerateMipmaps}
+
+    public MipmapGenerationMode MipmapGeneration = MipmapGenerationMode.Default;
+
+    public FilterType TextureMinFilter = FilterType.Linear;
+    public FilterType TextureMagFilter = FilterType.Linear;
+    public FilterType TextureMipFilter = FilterType.Linear;
+
     private record struct VTFResource(string Tag, byte Flags, uint Offset);
 
     public override void Import(SerializedAsset ctx, FileInfo assetPath)
     {
         Texture2D texture = LoadVTFTexture(assetPath);
+
+        texture.Name = Path.GetFileNameWithoutExtension(assetPath.Name);
+
+        texture.Sampler.SetFilter(TextureMinFilter, TextureMagFilter, TextureMipFilter);
+        texture.Sampler.SetWrapMode(SamplerAxis.U | SamplerAxis.V | SamplerAxis.W, TextureWrap);
+
+        if (MipmapGeneration == MipmapGenerationMode.GenerateMipmaps)
+            texture.GenerateMipmaps();
+
         ctx.SetMainObject(texture);
     }
 
@@ -121,11 +143,7 @@ public class VTFImporter : ScriptedImporter
             }
         }
 
-        var texture = new Texture2D(width, height)
-        {
-            Name = Path.GetFileNameWithoutExtension(assetPath.Name)
-        };
-
+        var texture = new Texture2D(width, height);
 
         if (version >= 7.3f)
         {
@@ -157,5 +175,31 @@ public class VTFImporter : ScriptedImporter
     {
         Console.Error.WriteLine($"[VTFImporter] Unsupported VTF format: {format}");
         return Veldrid.PixelFormat.R8_UNorm;
+    }
+}
+
+[CustomEditor(typeof(VTFImporter))]
+public class VTFImporterEditor : ScriptedEditor
+{
+    public override void OnInspectorGUI(EditorGUI.FieldChanges changes)
+    {
+        var importer = (VTFImporter)(target as MetaFile).importer;
+
+        gui.CurrentNode.Layout(LayoutType.Column);
+
+        if (EditorGUI.DrawProperty(0, "Mipmap Generation Mode", importer, "MipmapGeneration"))
+            changes.Add(importer, nameof(VTFImporter.MipmapGeneration));
+        if (EditorGUI.DrawProperty(1, "Min Filter", importer, "TextureMinFilter"))
+            changes.Add(importer, nameof(VTFImporter.TextureMinFilter));
+        if (EditorGUI.DrawProperty(2, "Mag Filter", importer, "TextureMagFilter"))
+            changes.Add(importer, nameof(VTFImporter.TextureMagFilter));
+        if (EditorGUI.DrawProperty(3, "Wrap Mode", importer, "TextureWrap"))
+            changes.Add(importer, nameof(VTFImporter.TextureWrap));
+
+        if (EditorGUI.StyledButton("Save"))
+        {
+            (target as MetaFile).Save();
+            AssetDatabase.Reimport((target as MetaFile).AssetPath);
+        }
     }
 }
