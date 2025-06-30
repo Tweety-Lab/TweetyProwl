@@ -21,6 +21,7 @@ Modified version of the Prowl Game Engine.
 | Steam Game Mounting        | ✅ Complete    |
 | UI Update        | ✅ Complete    |
 | Various QOL Features       | ✅ Complete    |
+| Modern C# API Changes       | ✅ Complete    |
 | Source Engine File Support             | 🛠️ In Development |
 | Phong Shading             | 🛠️ In Development |
 | Volumetric Lighting                          | 🔄 Planned     |
