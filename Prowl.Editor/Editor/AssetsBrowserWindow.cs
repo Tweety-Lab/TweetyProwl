@@ -453,7 +453,8 @@ public class AssetsBrowserWindow : EditorWindow
             {
                 if (_lastGenerated.Item1 != Time.frameCount || !_lastGenerated.Item2)
                 {
-                    if (TextureImporter.Supported.Contains(file.Extension, StringComparer.OrdinalIgnoreCase))
+                    // Kind of hacky way of getting vtfs to have thumbnails
+                    if (TextureImporter.Supported.Contains(file.Extension, StringComparer.OrdinalIgnoreCase) || file.Extension.Equals(".vtf", StringComparison.OrdinalIgnoreCase))
                     {
                         string relativeAssetPath = AssetDatabase.GetRelativePath(file.FullName);
                         if (_cachedThumbnails.TryGetValue(file.FullName, out var value))
