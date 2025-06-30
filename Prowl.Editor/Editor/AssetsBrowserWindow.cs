@@ -453,8 +453,9 @@ public class AssetsBrowserWindow : EditorWindow
             {
                 if (_lastGenerated.Item1 != Time.frameCount || !_lastGenerated.Item2)
                 {
-                    // Kind of hacky way of getting vtfs to have thumbnails
-                    if (TextureImporter.Supported.Contains(file.Extension, StringComparer.OrdinalIgnoreCase) || file.Extension.Equals(".vtf", StringComparison.OrdinalIgnoreCase))
+
+                    // Automatically give thumbnails to all Texture2D importers
+                    if (ImporterAttribute.GetImporter(file.Extension)?.GetCustomAttribute<ImporterAttribute>() is { GeneralType: var type } && type == typeof(Texture2D))
                     {
                         string relativeAssetPath = AssetDatabase.GetRelativePath(file.FullName);
                         if (_cachedThumbnails.TryGetValue(file.FullName, out var value))
