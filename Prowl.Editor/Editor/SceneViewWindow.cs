@@ -175,7 +175,7 @@ public class SceneViewWindow : EditorWindow
         rect.x = gui.CurrentNode.LayoutData.Rect.x + gui.CurrentNode.LayoutData.Rect.width - rect.width - 10;
         rect.y = gui.CurrentNode.LayoutData.Rect.y + 10;
         viewManipulator.SetRect(rect);
-        viewManipulator.SetCamera(Cam.Transform.forward, Cam.Transform.up, Cam.projectionType == Camera.ProjectionType.Orthographic);
+        viewManipulator.SetCamera(Cam.Transform.Forward, Cam.Transform.Up, Cam.projectionType == Camera.ProjectionType.Orthographic);
 
         if (viewManipulator.Update(blockPicking, out Vector3 newForward, out bool isOrtho))
         {
@@ -219,9 +219,9 @@ public class SceneViewWindow : EditorWindow
                     {
                         // Find Prefab go.IsPrefab
                         Transform prefab = hit.Transform;
-                        while (prefab.parent != null)
+                        while (prefab.Parent != null)
                         {
-                            prefab = prefab.parent;
+                            prefab = prefab.Parent;
                             if (prefab.gameObject.PrefabLink != null)
                                 break;
                         }
@@ -239,12 +239,12 @@ public class SceneViewWindow : EditorWindow
             {
                 gui.SetCursorVisibility(false);
                 Vector3 moveDir = Vector3.zero;
-                if (gui.IsKeyDown(Key.W)) moveDir += Cam.Transform.forward;
-                if (gui.IsKeyDown(Key.S)) moveDir -= Cam.Transform.forward;
-                if (gui.IsKeyDown(Key.A)) moveDir -= Cam.Transform.right;
-                if (gui.IsKeyDown(Key.D)) moveDir += Cam.Transform.right;
-                if (gui.IsKeyDown(Key.E)) moveDir += Cam.Transform.up;
-                if (gui.IsKeyDown(Key.Q)) moveDir -= Cam.Transform.up;
+                if (gui.IsKeyDown(Key.W)) moveDir += Cam.Transform.Forward;
+                if (gui.IsKeyDown(Key.S)) moveDir -= Cam.Transform.Forward;
+                if (gui.IsKeyDown(Key.A)) moveDir -= Cam.Transform.Right;
+                if (gui.IsKeyDown(Key.D)) moveDir += Cam.Transform.Right;
+                if (gui.IsKeyDown(Key.E)) moveDir += Cam.Transform.Up;
+                if (gui.IsKeyDown(Key.Q)) moveDir -= Cam.Transform.Up;
 
                 if (moveDir != Vector3.zero)
                 {
@@ -292,8 +292,8 @@ public class SceneViewWindow : EditorWindow
                     gui.SetCursorVisibility(false);
                     Vector2 mouseDelta = gui.PointerDelta;
                     Vector3 pos = Cam.Transform.position;
-                    pos -= Cam.Transform.right * mouseDelta.x * (Time.deltaTimeF * 1f * SceneViewPreferences.Instance.PanSensitivity);
-                    pos += Cam.Transform.up * mouseDelta.y * (Time.deltaTimeF * 1f * SceneViewPreferences.Instance.PanSensitivity);
+                    pos -= Cam.Transform.Right * mouseDelta.x * (Time.deltaTimeF * 1f * SceneViewPreferences.Instance.PanSensitivity);
+                    pos += Cam.Transform.Up * mouseDelta.y * (Time.deltaTimeF * 1f * SceneViewPreferences.Instance.PanSensitivity);
                     Cam.Transform.position = pos;
                     gui.PointerPos = WindowCenter;
 
@@ -311,7 +311,7 @@ public class SceneViewWindow : EditorWindow
                         if (HierarchyWindow.SelectHandler.Selected.First().Target is GameObject singleObject)
                         {
                             Cam.Transform.position = singleObject.Transform.position -
-                                                                (Cam.Transform.forward * defaultZoomFactor);
+                                                                (Cam.Transform.Forward * defaultZoomFactor);
                             return;
                         }
                     }
@@ -333,7 +333,7 @@ public class SceneViewWindow : EditorWindow
 
                     Vector3 averagePosition = combinedBounds.center;
                     Cam.Transform.position =
-                        averagePosition - (Cam.Transform.forward * zoomFactor);
+                        averagePosition - (Cam.Transform.Forward * zoomFactor);
                 }
             }
 
@@ -357,7 +357,7 @@ public class SceneViewWindow : EditorWindow
 
     private void HandleGizmos(List<GameObject> selectedGOs, Ray mouseRay, Matrix4x4 view, Matrix4x4 projection, bool blockPicking)
     {
-        gizmo.UpdateCamera(gui.CurrentNode.LayoutData.Rect, view, projection, Cam.Transform.up, Cam.Transform.forward, Cam.Transform.right);
+        gizmo.UpdateCamera(gui.CurrentNode.LayoutData.Rect, view, projection, Cam.Transform.Up, Cam.Transform.Forward, Cam.Transform.Right);
 
         gizmo.Snapping = Input.GetKey(Key.LeftControl);
         gizmo.SnapDistance = SceneViewPreferences.Instance.SnapDistance;
@@ -391,7 +391,7 @@ public class SceneViewWindow : EditorWindow
                     result.Value.ScaleDelta.HasValue)
                 {
                     var newPos = selectedGo.Transform.position + (result.Value.TranslationDelta ?? Vector3.zero);
-                    newPos = selectedGo.Transform.parent?.InverseTransformPoint(newPos) ?? newPos;
+                    newPos = selectedGo.Transform.Parent?.InverseTransformPoint(newPos) ?? newPos;
 
                     Quaternion newRot = selectedGo.Transform.rotation;
                     if (result.Value.RotationDelta.HasValue && result.Value.RotationAxis.HasValue)
@@ -433,7 +433,7 @@ public class SceneViewWindow : EditorWindow
                 Vector3? hit = SceneRaycaster.GetPosition(Cam, mouseUV, new Vector2(RenderTarget.Width, RenderTarget.Height));
 
                 if (hit == null)
-                    go.Transform.position = Cam.Transform.position + Cam.Transform.forward * 10;
+                    go.Transform.position = Cam.Transform.position + Cam.Transform.Forward * 10;
                 else
                     go.Transform.position = hit.Value;
             }
@@ -450,7 +450,7 @@ public class SceneViewWindow : EditorWindow
                 Vector3? hit = SceneRaycaster.GetPosition(Cam, mouseUV, new Vector2(RenderTarget.Width, RenderTarget.Height));
 
                 if (hit == null)
-                    t.Transform.position = Cam.Transform.position + Cam.Transform.forward * 10;
+                    t.Transform.position = Cam.Transform.position + Cam.Transform.Forward * 10;
                 else
                     go.Transform.position = hit.Value;
             }

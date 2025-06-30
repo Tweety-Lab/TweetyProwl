@@ -105,7 +105,7 @@ public static class AudioSystem
     {
         _engine.SetListenerPosition(t.position);
         _engine.SetListenerVelocity(t.position - lastPost);
-        _engine.SetListenerOrientation(t.forward, t.up);
+        _engine.SetListenerOrientation(t.Forward, t.Up);
     }
 
     public static ActiveAudio PlaySound(AudioClip clip)

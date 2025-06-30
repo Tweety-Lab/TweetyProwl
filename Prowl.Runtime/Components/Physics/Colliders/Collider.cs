@@ -38,7 +38,7 @@ public abstract class Collider : MonoBehaviour
         while (current != null)
         {
             cumulativeScale = Vector3.Scale(cumulativeScale, current.localScale);
-            current = current.parent;
+            current = current.Parent;
         }
 
         cumulativeScale = Vector3.Max(cumulativeScale, Vector3.one * 0.05);

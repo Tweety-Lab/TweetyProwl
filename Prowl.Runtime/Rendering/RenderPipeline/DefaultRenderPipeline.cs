@@ -284,8 +284,8 @@ public class DefaultRenderPipeline : RenderPipeline
     public struct CameraSnapshot(Camera camera)
     {
         public Vector3 cameraPosition = camera.Transform.position;
-        public Vector3 cameraUp = camera.Transform.up;
-        public Vector3 cameraForward = camera.Transform.forward;
+        public Vector3 cameraUp = camera.Transform.Up;
+        public Vector3 cameraForward = camera.Transform.Forward;
         public LayerMask cullingMask = camera.CullingMask;
         public CameraClearFlags clearFlags = camera.ClearFlags;
         public float nearClipPlane = camera.NearClipPlane;
@@ -490,8 +490,8 @@ public class DefaultRenderPipeline : RenderPipeline
                 if (light is DirectionalLight dirLight)
                 {
                     // Create light space transform matrices
-                    Vector3 lightDir = dirLight.Transform.forward;
-                    Vector3 lightUp = dirLight.Transform.up;
+                    Vector3 lightDir = dirLight.Transform.Forward;
+                    Vector3 lightUp = dirLight.Transform.Up;
                     Vector3 lightRight = Vector3.Cross(lightUp, lightDir).normalized;
                     lightUp = Vector3.Cross(lightDir, lightRight).normalized; // Recompute to ensure orthogonality
 

@@ -86,10 +86,10 @@ public class Scene : EngineObject, ISerializationCallbackReceiver
     public IEnumerable<GameObject> ActiveObjects => _allObj.Where(o => !o.IsDestroyed && o.enabledInHierarchy);
 
     /// <summary> Enumerates all root GameObjects, i.e. all GameObjects without a parent object. </summary>
-    public IEnumerable<GameObject> RootObjects => _allObj.Where(o => !o.IsDestroyed && o.Transform.parent == null);
+    public IEnumerable<GameObject> RootObjects => _allObj.Where(o => !o.IsDestroyed && o.Transform.Parent == null);
 
     /// <summary> Enumerates all <see cref="RootObjects"/> that are currently active. </summary>
-    public IEnumerable<GameObject> ActiveRootObjects => _allObj.Where(o => !o.IsDestroyed && o.Transform.parent == null && o.enabledInHierarchy);
+    public IEnumerable<GameObject> ActiveRootObjects => _allObj.Where(o => !o.IsDestroyed && o.Transform.Parent == null && o.enabledInHierarchy);
 
     /// <summary> Returns whether this Scene is completely empty. </summary>
     public bool IsEmpty => !AllObjects.Any();

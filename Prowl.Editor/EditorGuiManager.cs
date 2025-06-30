@@ -366,7 +366,7 @@ public static class EditorGuiManager
         var cam = SceneViewWindow.LastFocusedCamera;
         // get position 10 units infront
         var t = cam.GameObject;
-        return t.Transform.position + t.Transform.forward * 10;
+        return t.Transform.position + t.Transform.Forward * 10;
     }
 
     [MenuItem("Create/3D/Cube")] public static void Create_3D_Cube() => CreateDefaultModel("Cube", null);

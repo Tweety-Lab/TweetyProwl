@@ -37,15 +37,15 @@ public class DirectionalLight : Light
     public override LightType GetLightType() => LightType.Directional;
     public override void GetShadowMatrix(out Matrix4x4 view, out Matrix4x4 projection)
     {
-        Vector3 forward = Transform.forward;
+        Vector3 forward = Transform.Forward;
         projection = Matrix4x4.CreateOrthographic(shadowDistance, shadowDistance, -shadowDistance, shadowDistance);
         projection = Graphics.GetGPUProjectionMatrix(projection);
-        view = Matrix4x4.CreateLookTo(Transform.position, forward, Transform.up);
+        view = Matrix4x4.CreateLookTo(Transform.position, forward, Transform.Up);
     }
 
     public override GPULight GetGPULight(int res, bool cameraRelative, Vector3 cameraPosition)
     {
-        Vector3 forward = Transform.forward;
+        Vector3 forward = Transform.Forward;
         Matrix4x4 proj = Matrix4x4.CreateOrthographic(shadowDistance, shadowDistance, -shadowDistance, shadowDistance);
         proj = Graphics.GetGPUProjectionMatrix(proj);
         Matrix4x4 view;
@@ -53,17 +53,17 @@ public class DirectionalLight : Light
 
         if (cameraRelative)
         {
-            view = Matrix4x4.CreateLookTo(Transform.position - cameraPosition, forward, Transform.up);
+            view = Matrix4x4.CreateLookTo(Transform.position - cameraPosition, forward, Transform.Up);
         }
         else
         {
-            view = Matrix4x4.CreateLookTo(Transform.position, forward, Transform.up);
+            view = Matrix4x4.CreateLookTo(Transform.position, forward, Transform.Up);
         }
 
         return new GPULight
         {
             PositionType = new Vector4(0, blockerSamples, 0, 0),
-            DirectionRange = new Vector4(GameObject.Transform.forward, shadowDistance),
+            DirectionRange = new Vector4(GameObject.Transform.Forward, shadowDistance),
             Color = color.GetUInt(),
             Intensity = intensity,
             SpotData = new Vector2(0, 0),

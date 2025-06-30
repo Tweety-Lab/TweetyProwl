@@ -57,7 +57,7 @@ public sealed class WheelCollider : MonoBehaviour
 
     public bool IsGrounded => _grounded;
     public double Displacement => _displacement;
-    public Vector3 WorldPosition => Transform.position + (Transform.up * _displacement);
+    public Vector3 WorldPosition => Transform.position + (Transform.Up * _displacement);
     public double WheelRotation { get; private set; } = 0.0;
 
     public void AddTorque(double torque)
@@ -125,9 +125,9 @@ public sealed class WheelCollider : MonoBehaviour
         _displacement = 0.0f;
 
         Vector3 worldPos = Transform.position;
-        Vector3 worldAxis = Body.Transform.up;
+        Vector3 worldAxis = Body.Transform.Up;
 
-        Vector3 forward = Body.Transform.forward;
+        Vector3 forward = Body.Transform.Forward;
         Vector3 wheelFwd = Quaternion.AngleAxis((float)SteerAngle, worldAxis) * forward;
 
         Vector3 wheelLeft = Vector3.Cross(worldAxis, wheelFwd);
@@ -299,8 +299,8 @@ public sealed class WheelCollider : MonoBehaviour
 
     public override void DrawGizmos()
     {
-        Vector3 wheelFwd = Quaternion.AngleAxis((float)SteerAngle, Body.Transform.up) * Body.Transform.forward;
-        Vector3 wheelLeft = Vector3.Cross(Body.Transform.up, wheelFwd);
+        Vector3 wheelFwd = Quaternion.AngleAxis((float)SteerAngle, Body.Transform.Up) * Body.Transform.Forward;
+        Vector3 wheelLeft = Vector3.Cross(Body.Transform.Up, wheelFwd);
         wheelLeft.Normalize();
 
         // Debug Draw

@@ -20,8 +20,8 @@ public class Transform : ICloneExplicit
         {
             if (_isWorldPosDirty)
             {
-                if (parent != null)
-                    _cachedWorldPosition = parent.localToWorldMatrix.MultiplyPoint(m_LocalPosition);
+                if (Parent != null)
+                    _cachedWorldPosition = Parent.localToWorldMatrix.MultiplyPoint(m_LocalPosition);
                 else
                     _cachedWorldPosition = m_LocalPosition;
                 _isWorldPosDirty = false;
@@ -31,8 +31,8 @@ public class Transform : ICloneExplicit
         set
         {
             Vector3 newPosition = value;
-            if (parent != null)
-                newPosition = parent.InverseTransformPoint(newPosition);
+            if (Parent != null)
+                newPosition = Parent.InverseTransformPoint(newPosition);
 
             if (m_LocalPosition != newPosition)
             {
@@ -64,11 +64,11 @@ public class Transform : ICloneExplicit
             if (_isWorldRotDirty)
             {
                 Quaternion worldRot = m_LocalRotation;
-                Transform p = parent;
+                Transform p = Parent;
                 while (p != null)
                 {
                     worldRot = p.m_LocalRotation * worldRot;
-                    p = p.parent;
+                    p = p.Parent;
                 }
                 _cachedWorldRotation = worldRot;
                 _isWorldRotDirty = false;
@@ -78,8 +78,8 @@ public class Transform : ICloneExplicit
         set
         {
             var newVale = Quaternion.identity;
-            if (parent != null)
-                newVale = MakeSafe(Quaternion.NormalizeSafe(Quaternion.Inverse(parent.rotation) * value));
+            if (Parent != null)
+                newVale = MakeSafe(Quaternion.NormalizeSafe(Quaternion.Inverse(Parent.rotation) * value));
             else
                 newVale = MakeSafe(Quaternion.NormalizeSafe(value));
             if(localRotation != newVale)
@@ -147,11 +147,11 @@ public class Transform : ICloneExplicit
             if (_isWorldScaleDirty)
             {
                 Vector3 scale = localScale;
-                Transform p = parent;
+                Transform p = Parent;
                 while (p != null)
                 {
                     scale.Scale(p.localScale);
-                    p = p.parent;
+                    p = p.Parent;
                 }
                 _cachedLossyScale = scale;
                 _isWorldScaleDirty = false;
@@ -162,9 +162,9 @@ public class Transform : ICloneExplicit
 
     #endregion
 
-    public Vector3 right { get => rotation * Vector3.right; }     // TODO: Setter
-    public Vector3 up { get => rotation * Vector3.up; }           // TODO: Setter
-    public Vector3 forward { get => rotation * Vector3.forward; } // TODO: Setter
+    public Vector3 Right { get => rotation * Vector3.right; }     // TODO: Setter
+    public Vector3 Up { get => rotation * Vector3.up; }           // TODO: Setter
+    public Vector3 Forward { get => rotation * Vector3.forward; } // TODO: Setter
 
     public Matrix4x4 worldToLocalMatrix => localToWorldMatrix.Invert();
 
@@ -175,7 +175,7 @@ public class Transform : ICloneExplicit
             if (_isLocalToWorldMatrixDirty)
             {
                 Matrix4x4 t = Matrix4x4.TRS(m_LocalPosition, m_LocalRotation, m_LocalScale);
-                _cachedLocalToWorldMatrix = parent != null ? parent.localToWorldMatrix * t : t;
+                _cachedLocalToWorldMatrix = Parent != null ? Parent.localToWorldMatrix * t : t;
                 _isLocalToWorldMatrixDirty = false;
             }
             return _cachedLocalToWorldMatrix;
@@ -184,7 +184,7 @@ public class Transform : ICloneExplicit
         }
     }
 
-    public Transform parent
+    public Transform Parent
     {
         get => gameObject?.parent?.Transform;
         set => gameObject?.SetParent(value.gameObject, true);
@@ -192,13 +192,13 @@ public class Transform : ICloneExplicit
 
     // https://forum.unity.com/threads/transform-haschanged-would-be-better-if-replaced-by-a-version-number.700004/
     // Replacement for hasChanged
-    public uint version
+    public uint Version
     {
         get => _version;
         set => _version = value;
     }
 
-    public Transform root => parent == null ? this : parent.root;
+    public Transform root => Parent == null ? this : Parent.root;
 
 
     #endregion
@@ -293,9 +293,9 @@ public class Transform : ICloneExplicit
     public static string GetPath(Transform target, Transform root)
     {
         string path = target.gameObject.Name;
-        while (target.parent != null)
+        while (target.Parent != null)
         {
-            target = target.parent;
+            target = target.Parent;
             path = target.gameObject.Name + "/" + path;
             if (target == root)
                 break;
@@ -374,15 +374,15 @@ public class Transform : ICloneExplicit
             worldVector.Scale(cur.m_LocalScale);
             worldVector = cur.m_LocalRotation * worldVector;
 
-            cur = cur.parent;
+            cur = cur.Parent;
         }
         return worldVector;
     }
     public Vector3 InverseTransformVector(Vector3 inVector)
     {
         Vector3 newVector, localVector;
-        if (parent != null)
-            localVector = parent.InverseTransformVector(inVector);
+        if (Parent != null)
+            localVector = Parent.InverseTransformVector(inVector);
         else
             localVector = inVector;
 
@@ -401,7 +401,7 @@ public class Transform : ICloneExplicit
         while (cur != null)
         {
             worldRotation = cur.m_LocalRotation * worldRotation;
-            cur = cur.parent;
+            cur = cur.Parent;
         }
         return worldRotation;
     }
@@ -411,9 +411,9 @@ public class Transform : ICloneExplicit
     public Matrix4x4 GetWorldRotationAndScale()
     {
         Matrix4x4 ret = Matrix4x4.TRS(new Vector3(0, 0, 0), m_LocalRotation, m_LocalScale);
-        if (parent != null)
+        if (Parent != null)
         {
-            Matrix4x4 parentTransform = parent.GetWorldRotationAndScale();
+            Matrix4x4 parentTransform = Parent.GetWorldRotationAndScale();
             ret = parentTransform * ret;
         }
         return ret;

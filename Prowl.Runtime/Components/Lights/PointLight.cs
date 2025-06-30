@@ -80,7 +80,7 @@ public class AreaLight : Light
         return new GPULight
         {
             PositionType = new Vector4(lightPos, 2), // Type 2 for area light
-            DirectionRange = new Vector4(Transform.forward, packedSizeFloat),
+            DirectionRange = new Vector4(Transform.Forward, packedSizeFloat),
             Color = color.GetUInt(),
             Intensity = intensity,
             SpotData = new Vector2(twoSided ? 1 : 0, 0),

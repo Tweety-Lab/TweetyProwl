@@ -44,7 +44,7 @@ public sealed class AudioSource : MonoBehaviour
         var listener = AudioSystem.Listener.GameObject.Transform;
         var thisPos = GameObject.Transform.position;
         _source.Position = listener.InverseTransformPoint(thisPos);
-        _source.Direction = GameObject.Transform.forward;
+        _source.Direction = GameObject.Transform.Forward;
         _source.Gain = Volume;
         _source.Looping = Looping;
         _source.MaxDistance = MaxDistance;
@@ -61,7 +61,7 @@ public sealed class AudioSource : MonoBehaviour
             var listener = AudioSystem.Listener.GameObject.Transform;
             var thisPos = GameObject.Transform.position;
             _source.Position = listener.InverseTransformPoint(thisPos);
-            _source.Direction = GameObject.Transform.forward;
+            _source.Direction = GameObject.Transform.Forward;
             //_lastVersion = GameObject.transform.version;
         }
 

@@ -171,8 +171,8 @@ public class Camera : MonoBehaviour
             _nonJitteredProjectionMatrix = _projectionMatrix;
         }
 
-        ViewMatrix = Matrix4x4.CreateLookTo(Transform.position, Transform.forward, Transform.up);
-        OriginViewMatrix = Matrix4x4.CreateLookTo(Vector3.zero, Transform.forward, Transform.up);
+        ViewMatrix = Matrix4x4.CreateLookTo(Transform.position, Transform.Forward, Transform.Up);
+        OriginViewMatrix = Matrix4x4.CreateLookTo(Vector3.zero, Transform.Forward, Transform.Up);
 
         return camTarget;
     }
@@ -230,7 +230,7 @@ public class Camera : MonoBehaviour
     {
         Vector3 position = applyPosition ? Transform.position : Vector3.zero;
 
-        return Matrix4x4.CreateLookTo(position, Transform.forward, Transform.up);
+        return Matrix4x4.CreateLookTo(position, Transform.Forward, Transform.Up);
     }
 
     private Matrix4x4 GetProjectionMatrix(float aspect, bool accomodateGPUCoordinateSystem = false)

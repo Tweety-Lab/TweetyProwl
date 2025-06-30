@@ -27,7 +27,7 @@ public abstract class Light : MonoBehaviour, IRenderableLight
     public virtual int GetLightID() => this.InstanceID;
     public abstract LightType GetLightType();
     public virtual Vector3 GetLightPosition() => Transform.position;
-    public virtual Vector3 GetLightDirection() => Transform.forward;
+    public virtual Vector3 GetLightDirection() => Transform.Forward;
     public virtual bool DoCastShadows() => castShadows;
     public abstract void GetShadowMatrix(out Matrix4x4 view, out Matrix4x4 projection);
 
