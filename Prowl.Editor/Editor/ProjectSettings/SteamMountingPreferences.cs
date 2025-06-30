@@ -7,9 +7,9 @@ using Prowl.Runtime;
 using Prowl.Runtime.Utils;
 using Prowl.Runtime.Utils.Steam;
 
-namespace Prowl.Editor.Editor.Preferences;
+namespace Prowl.Editor.Editor.ProjectSettings;
 
-[FilePath("SteamMonting.pref", FilePathAttribute.Location.EditorPreference)]
+[FilePath("SteamMonting.projsetting", FilePathAttribute.Location.EditorSetting)]
 public class SteamMountingPreferences : ScriptableSingleton<SteamMountingPreferences>
 {
     [Tooltip("Should this game mount steam games?")]

@@ -3,7 +3,7 @@
 
 using System.Reflection;
 
-using Prowl.Editor.Editor.Preferences;
+using Prowl.Editor.Editor.ProjectSettings;
 using Prowl.Editor.Preferences;
 using Prowl.Editor.ProjectSettings;
 using Prowl.Icons;
@@ -25,6 +25,7 @@ public class ProjectSettingsWindow : SingletonEditorWindow
         RenderSideViewElement(TagLayerManager.Instance);
         RenderSideViewElement(PhysicsSetting.Instance);
         RenderSideViewElement(BuildProjectSettings.Instance);
+        RenderSideViewElement(SteamMountingPreferences.Instance);
     }
 }
 
@@ -41,7 +42,6 @@ public class PreferencesWindow : SingletonEditorWindow
         RenderSideViewElement(EditorStylePrefs.Instance);
         RenderSideViewElement(AssetPipelinePreferences.Instance);
         RenderSideViewElement(SceneViewPreferences.Instance);
-        RenderSideViewElement(SteamMountingPreferences.Instance);
     }
 }
 
