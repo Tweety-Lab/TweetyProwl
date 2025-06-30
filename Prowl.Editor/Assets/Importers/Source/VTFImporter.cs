@@ -3,6 +3,7 @@
 
 using System.Text;
 
+using Prowl.Editor.Utilities.Source;
 using Prowl.Runtime;
 using Prowl.Runtime.GUI;
 using Prowl.Runtime.Rendering;
@@ -154,14 +155,44 @@ public class VTFImporter : ScriptedImporter
             stream.Seek(highRes.Offset, SeekOrigin.Begin);
         }
 
-        int bytesPerPixel = 4; // Assuming uncompressed format
-        int imageSize = width * height * bytesPerPixel;
+        if (highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT5)
+        {
+            int blockWidth = (width + 3) / 4;
+            int blockHeight = (height + 3) / 4;
+            int compressedDataSize = blockWidth * blockHeight * 16;
 
-        byte[] pixels = reader.ReadBytes(imageSize);
-        if (pixels.Length != imageSize)
-            throw new InvalidDataException($"Unexpected pixel data size. Expected {imageSize}, got {pixels.Length}");
+            byte[] compressedData = reader.ReadBytes(compressedDataSize);
+            if (compressedData.Length != compressedDataSize)
+                throw new InvalidDataException($"Unexpected DXT5 data size. Expected {compressedDataSize}, got {compressedData.Length}");
 
-        texture.SetData<byte>(pixels);
+            byte[] decodedPixels = DXTCompression.DecodeDXT5(width, height, compressedData);
+            texture.SetData<byte>(decodedPixels);
+        }
+        else if (highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT1 || highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA)
+        {
+            int blockWidth = (width + 3) / 4;
+            int blockHeight = (height + 3) / 4;
+            int compressedDataSize = blockWidth * blockHeight * 8;
+
+            byte[] compressedData = reader.ReadBytes(compressedDataSize);
+            if (compressedData.Length != compressedDataSize)
+                throw new InvalidDataException($"Unexpected DXT1 data size. Expected {compressedDataSize}, got {compressedData.Length}");
+
+            byte[] decodedPixels = DXTCompression.DecodeDXT1(width, height, compressedData);
+            texture.SetData<byte>(decodedPixels);
+        }
+        else
+        {
+            int bytesPerPixel = 4; // Assuming uncompressed format
+            int imageSize = width * height * bytesPerPixel;
+
+            byte[] pixels = reader.ReadBytes(imageSize);
+            if (pixels.Length != imageSize)
+                throw new InvalidDataException($"Unexpected pixel data size. Expected {imageSize}, got {pixels.Length}");
+
+            texture.SetData<byte>(pixels);
+        }
+
         return texture;
     }
 
@@ -181,11 +212,11 @@ public class VTFImporter : ScriptedImporter
             // 16-bit unsigned normalized RGBA
             VTFFormat.IMAGE_FORMAT_RGBA16161616 => Veldrid.PixelFormat.R16_G16_B16_A16_UNorm,
 
-            // Compressed formats
-            VTFFormat.IMAGE_FORMAT_DXT1 => Veldrid.PixelFormat.BC1_Rgba_UNorm,
-            VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => Veldrid.PixelFormat.BC1_Rgba_UNorm,
-            VTFFormat.IMAGE_FORMAT_DXT3 => Veldrid.PixelFormat.BC2_UNorm,
-            VTFFormat.IMAGE_FORMAT_DXT5 => Veldrid.PixelFormat.BC3_UNorm,
+            // Compressed formats, fallback to R8_G8_B8_A8_UNorm since we decompress on CPU
+            VTFFormat.IMAGE_FORMAT_DXT1 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_DXT3 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+            VTFFormat.IMAGE_FORMAT_DXT5 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
 
             // Single channel grayscale
             VTFFormat.IMAGE_FORMAT_I8 => Veldrid.PixelFormat.R8_UNorm,
