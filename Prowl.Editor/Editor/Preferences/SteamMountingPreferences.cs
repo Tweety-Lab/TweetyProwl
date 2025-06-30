@@ -20,10 +20,6 @@ public class SteamMountingPreferences : ScriptableSingleton<SteamMountingPrefere
     [Tooltip("List of game IDs to mount.")]
     public List<int> MountedGameIDs = new List<int>();
 
-    [ShowIf("UseSteamMounting")]
-    [Tooltip("Folder to save mounted asset references to.")]
-    public string AssetFolderName = "Mounted";
-
     [GUIButton("Refresh Mounted Assets")]
     public static void RefreshMountedAssets()
     {
