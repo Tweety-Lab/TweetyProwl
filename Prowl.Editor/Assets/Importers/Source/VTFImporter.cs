@@ -49,6 +49,14 @@ public enum VTFFormat
 [Importer("FileIcon.png", typeof(Texture2D), ".vtf")]
 public class VTFImporter : ScriptedImporter
 {
+    // Map VTF format to decoder
+    private static readonly Dictionary<VTFFormat, Func<int, int, byte[], byte[]>> DXTDecoders = new()
+        {
+            { VTFFormat.IMAGE_FORMAT_DXT1, DXTCompression.DecodeDXT1 },
+            { VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA, DXTCompression.DecodeDXT1 },
+            { VTFFormat.IMAGE_FORMAT_DXT5, DXTCompression.DecodeDXT5 }
+        };
+
     [Header("VTF")]
     public TextureWrapMode TextureWrap = TextureWrapMode.Wrap;
 
@@ -155,30 +163,18 @@ public class VTFImporter : ScriptedImporter
             stream.Seek(highRes.Offset, SeekOrigin.Begin);
         }
 
-        if (highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT5)
+        if (DXTDecoders.TryGetValue(highResImageFormat, out var decoder))
         {
+            int blockSize = highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT5 ? 16 : 8;
             int blockWidth = (width + 3) / 4;
             int blockHeight = (height + 3) / 4;
-            int compressedDataSize = blockWidth * blockHeight * 16;
+            int compressedDataSize = blockWidth * blockHeight * blockSize;
 
             byte[] compressedData = reader.ReadBytes(compressedDataSize);
             if (compressedData.Length != compressedDataSize)
-                throw new InvalidDataException($"Unexpected DXT5 data size. Expected {compressedDataSize}, got {compressedData.Length}");
+                throw new InvalidDataException($"Unexpected DXT data size. Expected {compressedDataSize}, got {compressedData.Length}");
 
-            byte[] decodedPixels = DXTCompression.DecodeDXT5(width, height, compressedData);
-            texture.SetData<byte>(decodedPixels);
-        }
-        else if (highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT1 || highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA)
-        {
-            int blockWidth = (width + 3) / 4;
-            int blockHeight = (height + 3) / 4;
-            int compressedDataSize = blockWidth * blockHeight * 8;
-
-            byte[] compressedData = reader.ReadBytes(compressedDataSize);
-            if (compressedData.Length != compressedDataSize)
-                throw new InvalidDataException($"Unexpected DXT1 data size. Expected {compressedDataSize}, got {compressedData.Length}");
-
-            byte[] decodedPixels = DXTCompression.DecodeDXT1(width, height, compressedData);
+            byte[] decodedPixels = decoder(width, height, compressedData);
             texture.SetData<byte>(decodedPixels);
         }
         else
