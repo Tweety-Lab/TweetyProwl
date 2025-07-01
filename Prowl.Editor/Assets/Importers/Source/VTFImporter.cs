@@ -51,11 +51,12 @@ public class VTFImporter : ScriptedImporter
 {
     // Map VTF format to decoder
     private static readonly Dictionary<VTFFormat, Func<int, int, byte[], byte[]>> DXTDecoders = new()
-        {
-            { VTFFormat.IMAGE_FORMAT_DXT1, DXTCompression.DecodeDXT1 },
-            { VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA, DXTCompression.DecodeDXT1 },
-            { VTFFormat.IMAGE_FORMAT_DXT5, DXTCompression.DecodeDXT5 }
-        };
+    {
+        { VTFFormat.IMAGE_FORMAT_DXT1, DXTCompression.DecodeDXT1 },
+        { VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA, DXTCompression.DecodeDXT1 },
+        { VTFFormat.IMAGE_FORMAT_DXT3, DXTCompression.DecodeDXT3 },
+        { VTFFormat.IMAGE_FORMAT_DXT5, DXTCompression.DecodeDXT5 }
+    };
 
     [Header("VTF")]
     public TextureWrapMode TextureWrap = TextureWrapMode.Wrap;
@@ -165,7 +166,12 @@ public class VTFImporter : ScriptedImporter
 
         if (DXTDecoders.TryGetValue(highResImageFormat, out var decoder))
         {
-            int blockSize = highResImageFormat == VTFFormat.IMAGE_FORMAT_DXT5 ? 16 : 8;
+            int blockSize = highResImageFormat switch
+            {
+                VTFFormat.IMAGE_FORMAT_DXT1 or VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => 8,
+                VTFFormat.IMAGE_FORMAT_DXT3 or VTFFormat.IMAGE_FORMAT_DXT5 => 16,
+                _ => throw new InvalidDataException($"Unsupported block-compressed format: {highResImageFormat}")
+            };
             int blockWidth = (width + 3) / 4;
             int blockHeight = (height + 3) / 4;
             int compressedDataSize = blockWidth * blockHeight * blockSize;
