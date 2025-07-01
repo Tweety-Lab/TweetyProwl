@@ -9,6 +9,7 @@ namespace Prowl.Editor.Utilities.Source;
 /// </summary>
 internal static class DXTCompression
 {
+
     #region DXT1
     /// <summary>
     /// Decodes DXT1 compressed data to raw RGBA bytes (32-bit per pixel)
@@ -92,6 +93,90 @@ internal static class DXTCompression
                 pixels[pixelIndex * 4 + 1] = g[colorCode];
                 pixels[pixelIndex * 4 + 2] = b[colorCode];
                 pixels[pixelIndex * 4 + 3] = a[colorCode];
+            }
+        }
+    }
+    #endregion
+
+    #region DXT3
+    /// <summary>
+    /// Decodes DXT3 compressed data to raw RGBA bytes (32-bit per pixel)
+    /// </summary>
+    public static byte[] DecodeDXT3(int width, int height, byte[] dxt3Data)
+    {
+        int blockCountX = (width + 3) / 4;
+        int blockCountY = (height + 3) / 4;
+        byte[] pixels = new byte[width * height * 4];
+
+        for (int blockY = 0; blockY < blockCountY; blockY++)
+        {
+            for (int blockX = 0; blockX < blockCountX; blockX++)
+            {
+                int blockIndex = (blockY * blockCountX + blockX) * 16; // DXT3 block size = 16 bytes
+                DecodeDXT3Block(dxt3Data, blockIndex, pixels, width, height, blockX * 4, blockY * 4);
+            }
+        }
+
+        return pixels;
+    }
+
+    /// <summary>
+    /// Decodes a single 16-byte DXT3 block at blockOffset in compressed data, writes RGBA pixels at (px, py)
+    /// </summary>
+    public static void DecodeDXT3Block(byte[] data, int blockOffset, byte[] pixels, int width, int height, int px, int py)
+    {
+        // Alpha (64 bits = 4 bits per pixel)
+        for (int row = 0; row < 4; row++)
+        {
+            ushort alphaRow = BitConverter.ToUInt16(data, blockOffset + row * 2);
+            for (int col = 0; col < 4; col++)
+            {
+                int alpha4bit = (alphaRow >> (col * 4)) & 0xF;
+                int pixelX = px + col;
+                int pixelY = py + row;
+                if (pixelX >= width || pixelY >= height) continue;
+
+                int pixelIndex = pixelY * width + pixelX;
+                pixels[pixelIndex * 4 + 3] = (byte)(alpha4bit * 17); // Scale 0-15 → 0-255
+            }
+        }
+
+        // Color block
+        ushort color0 = BitConverter.ToUInt16(data, blockOffset + 8);
+        ushort color1 = BitConverter.ToUInt16(data, blockOffset + 10);
+        uint code = BitConverter.ToUInt32(data, blockOffset + 12);
+
+        (byte r0, byte g0, byte b0) = DecodeRGB565(color0);
+        (byte r1, byte g1, byte b1) = DecodeRGB565(color1);
+
+        byte[] r = new byte[4];
+        byte[] g = new byte[4];
+        byte[] b = new byte[4];
+
+        r[0] = r0; g[0] = g0; b[0] = b0;
+        r[1] = r1; g[1] = g1; b[1] = b1;
+        r[2] = (byte)((2 * r0 + r1) / 3);
+        g[2] = (byte)((2 * g0 + g1) / 3);
+        b[2] = (byte)((2 * b0 + b1) / 3);
+        r[3] = (byte)((r0 + 2 * r1) / 3);
+        g[3] = (byte)((g0 + 2 * g1) / 3);
+        b[3] = (byte)((b0 + 2 * b1) / 3);
+
+        for (int row = 0; row < 4; row++)
+        {
+            for (int col = 0; col < 4; col++)
+            {
+                int pixelX = px + col;
+                int pixelY = py + row;
+                if (pixelX >= width || pixelY >= height) continue;
+
+                int pixelIndex = pixelY * width + pixelX;
+                int codeIndex = 2 * (row * 4 + col);
+                int colorCode = (int)((code >> codeIndex) & 0x03);
+
+                pixels[pixelIndex * 4 + 0] = r[colorCode];
+                pixels[pixelIndex * 4 + 1] = g[colorCode];
+                pixels[pixelIndex * 4 + 2] = b[colorCode];
             }
         }
     }
@@ -215,6 +300,7 @@ internal static class DXTCompression
     }
 
     #endregion
+
 
     // Converts RGB565 16-bit color to 8-bit per channel
     private static (byte r, byte g, byte b) DecodeRGB565(ushort c)
