@@ -48,7 +48,7 @@ public enum VTFFormat
     IMAGE_FORMAT_UVLX8888
 }
 
-[Importer("FileIcon.png", typeof(Texture2D), ".vtf")]
+[Importer("SourceIcon.png", typeof(Texture2D), ".vtf")]
 public class VTFImporter : ScriptedImporter
 {
     // Map VTF format to decoder
