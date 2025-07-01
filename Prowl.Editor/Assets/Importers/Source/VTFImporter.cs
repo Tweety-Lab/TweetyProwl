@@ -9,6 +9,8 @@ using Prowl.Runtime.GUI;
 using Prowl.Runtime.Rendering;
 using Prowl.Runtime.Utils;
 
+using Vortice.DXGI;
+
 namespace Prowl.Editor.Assets.Importers.Source;
 
 /// <summary>
@@ -58,6 +60,55 @@ public class VTFImporter : ScriptedImporter
         { VTFFormat.IMAGE_FORMAT_DXT5, DXTCompression.DecodeDXT5 }
     };
 
+    // Map VTF format to Veldrid PixelFormat
+    private static readonly Dictionary<VTFFormat, Veldrid.PixelFormat> PixelFormatMap = new()
+    {
+        // 32-bit formats with alpha
+        [VTFFormat.IMAGE_FORMAT_RGBA8888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_ABGR8888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm, // Note: No exact match in Veldrid
+        [VTFFormat.IMAGE_FORMAT_ARGB8888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm, // Note: No exact match in Veldrid
+        [VTFFormat.IMAGE_FORMAT_BGRA8888] = Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGRX8888] = Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+
+        // 16-bit float format with alpha
+        [VTFFormat.IMAGE_FORMAT_RGBA16161616F] = Veldrid.PixelFormat.R16_G16_B16_A16_Float,
+
+        // 16-bit unsigned normalized RGBA
+        [VTFFormat.IMAGE_FORMAT_RGBA16161616] = Veldrid.PixelFormat.R16_G16_B16_A16_UNorm,
+
+        // Compressed formats (decompressed to RGBA)
+        [VTFFormat.IMAGE_FORMAT_DXT1] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_DXT3] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_DXT5] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+
+        // Single channel formats
+        [VTFFormat.IMAGE_FORMAT_I8] = Veldrid.PixelFormat.R8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_A8] = Veldrid.PixelFormat.R8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_P8] = Veldrid.PixelFormat.R8_UNorm,
+
+        // Two channel formats
+        [VTFFormat.IMAGE_FORMAT_IA88] = Veldrid.PixelFormat.R8_G8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_UV88] = Veldrid.PixelFormat.R8_G8_UNorm,
+
+        // 24-bit RGB formats
+        [VTFFormat.IMAGE_FORMAT_RGB888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGR888] = Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_RGB888_BLUESCREEN] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGR888_BLUESCREEN] = Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
+
+        // 16-bit packed formats
+        [VTFFormat.IMAGE_FORMAT_RGB565] = Veldrid.PixelFormat.R16_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGR565] = Veldrid.PixelFormat.R16_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGRA4444] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGRA5551] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_BGRX5551] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+
+        // Special formats
+        [VTFFormat.IMAGE_FORMAT_UVWQ8888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+        [VTFFormat.IMAGE_FORMAT_UVLX8888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
+    };
+
     [Header("VTF")]
     public TextureWrapMode TextureWrap = TextureWrapMode.Wrap;
 
@@ -94,13 +145,15 @@ public class VTFImporter : ScriptedImporter
     public static Texture2D LoadVTFTexture(FileInfo assetPath)
     {
         // Start binary stream
-        using var stream = assetPath.OpenRead();
+        using var stream = new BufferedStream(assetPath.OpenRead(), 32 * 1024);
         using var reader = new BinaryReader(stream, Encoding.ASCII, leaveOpen: false);
 
         // Validate VTF signature
-        string signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
-        if (signature != "VTF\0")
-            throw new InvalidDataException("Invalid VTF file signature.");
+        if (reader.ReadByte() != (byte)'V' ||
+            reader.ReadByte() != (byte)'T' ||
+            reader.ReadByte() != (byte)'F' ||
+            reader.ReadByte() != 0)
+            throw new InvalidDataException("Invalid VTF signature.");
 
         // Read version
         uint versionMajor = reader.ReadUInt32(); // version[0]
@@ -157,111 +210,161 @@ public class VTFImporter : ScriptedImporter
 
         if (version >= 7.3f)
         {
-            var highRes = resources.FirstOrDefault(r => r.Tag == "\x30\0\0");
+            // Faster version of first or default
+            VTFResource highRes = default;
+            foreach (var r in resources)
+            {
+                if (r.Tag == "\x30\0\0")
+                {
+                    highRes = r;
+                    break;
+                }
+            }
+
             if (highRes == default)
                 throw new InvalidDataException("Missing high-res image resource.");
 
             stream.Seek(highRes.Offset, SeekOrigin.Begin);
         }
 
+
         if (DXTDecoders.TryGetValue(highResImageFormat, out var decoder))
         {
-            int blockSize = highResImageFormat switch
-            {
-                VTFFormat.IMAGE_FORMAT_DXT1 or VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => 8,
-                VTFFormat.IMAGE_FORMAT_DXT3 or VTFFormat.IMAGE_FORMAT_DXT5 => 16,
-                _ => throw new InvalidDataException($"Unsupported block-compressed format: {highResImageFormat}")
-            };
+            // Get block size
+            int blockSize = GetBytesPerPixel(highResImageFormat);
+
+            // Validate it's a supported compressed format
+            if (blockSize != 8 && blockSize != 16)
+                throw new InvalidDataException($"Unsupported block-compressed format: {highResImageFormat}");
+
+            // Calculate exact size needed
             int blockWidth = (width + 3) / 4;
             int blockHeight = (height + 3) / 4;
             int compressedDataSize = blockWidth * blockHeight * blockSize;
 
-            byte[] compressedData = reader.ReadBytes(compressedDataSize);
-            if (compressedData.Length != compressedDataSize)
-                throw new InvalidDataException($"Unexpected DXT data size. Expected {compressedDataSize}, got {compressedData.Length}");
+            // Read directly into pre-allocated buffer
+            byte[] compressedData = new byte[compressedDataSize];
+            int bytesRead = reader.Read(compressedData, 0, compressedDataSize);
+            if (bytesRead != compressedDataSize)
+                throw new InvalidDataException($"Unexpected DXT data size. Expected {compressedDataSize}, got {bytesRead}");
 
+            // Decode and set texture data
             byte[] decodedPixels = decoder(width, height, compressedData);
             texture.SetData<byte>(decodedPixels);
         }
         else
         {
-            int bytesPerPixel = 4; // Assuming uncompressed format
+            // Get bytes per pixel
+            int bytesPerPixel = GetBytesPerPixel(highResImageFormat);
             int imageSize = width * height * bytesPerPixel;
 
-            byte[] pixels = reader.ReadBytes(imageSize);
-            if (pixels.Length != imageSize)
-                throw new InvalidDataException($"Unexpected pixel data size. Expected {imageSize}, got {pixels.Length}");
+            // Handle special case for RGB888 (3 bytes -> 4 bytes conversion)
+            if (highResImageFormat == VTFFormat.IMAGE_FORMAT_RGB888 ||
+                highResImageFormat == VTFFormat.IMAGE_FORMAT_BGR888)
+            {
+                // Read 24-bit data and convert to 32-bit
+                byte[] sourcePixels = new byte[width * height * 3];
+                if (reader.Read(sourcePixels, 0, sourcePixels.Length) != sourcePixels.Length)
+                    throw new InvalidDataException($"Unexpected pixel data size");
 
-            texture.SetData<byte>(pixels);
+                byte[] convertedPixels = new byte[width * height * 4];
+                Convert24To32Bit(sourcePixels, convertedPixels,
+                                highResImageFormat == VTFFormat.IMAGE_FORMAT_BGR888);
+                texture.SetData<byte>(convertedPixels);
+            }
+            else
+            {
+                // Standard case, read directly
+                byte[] pixels = new byte[imageSize];
+                int bytesRead = reader.Read(pixels, 0, imageSize);
+                if (bytesRead != imageSize)
+                    throw new InvalidDataException($"Unexpected pixel data size. Expected {imageSize}, got {bytesRead}");
+
+                texture.SetData<byte>(pixels);
+            }
         }
 
+
         return texture;
+    }
+
+    private static void Convert24To32Bit(byte[] source, byte[] destination, bool isBgr)
+    {
+        for (int i = 0, j = 0; i < source.Length; i += 3, j += 4)
+        {
+            if (isBgr)
+            {
+                destination[j] = source[i + 2];     // B -> R
+                destination[j + 1] = source[i + 1]; // G -> G
+                destination[j + 2] = source[i];     // R -> B
+            }
+            else
+            {
+                destination[j] = source[i];         // R
+                destination[j + 1] = source[i + 1]; // G
+                destination[j + 2] = source[i + 2]; // B
+            }
+            destination[j + 3] = 255; // Set alpha to fully opaque
+        }
+    }
+
+    private static int GetBytesPerPixel(VTFFormat format)
+    {
+        return format switch
+        {
+            // 32-bit formats (4 bytes)
+            VTFFormat.IMAGE_FORMAT_RGBA8888 => 4,
+            VTFFormat.IMAGE_FORMAT_ABGR8888 => 4,
+            VTFFormat.IMAGE_FORMAT_ARGB8888 => 4,
+            VTFFormat.IMAGE_FORMAT_BGRA8888 => 4,
+            VTFFormat.IMAGE_FORMAT_BGRX8888 => 4,
+            VTFFormat.IMAGE_FORMAT_UVWQ8888 => 4,
+            VTFFormat.IMAGE_FORMAT_UVLX8888 => 4,
+
+            // 24-bit formats (3 bytes)
+            VTFFormat.IMAGE_FORMAT_RGB888 => 3,
+            VTFFormat.IMAGE_FORMAT_BGR888 => 3,
+            VTFFormat.IMAGE_FORMAT_RGB888_BLUESCREEN => 3,
+            VTFFormat.IMAGE_FORMAT_BGR888_BLUESCREEN => 3,
+
+            // 16-bit formats (2 bytes)
+            VTFFormat.IMAGE_FORMAT_RGBA16161616F => 8, // 4x16-bit floats
+            VTFFormat.IMAGE_FORMAT_RGBA16161616 => 8,  // 4x16-bit integers
+            VTFFormat.IMAGE_FORMAT_RGB565 => 2,
+            VTFFormat.IMAGE_FORMAT_BGR565 => 2,
+            VTFFormat.IMAGE_FORMAT_IA88 => 2,
+            VTFFormat.IMAGE_FORMAT_BGRA4444 => 2,
+            VTFFormat.IMAGE_FORMAT_BGRA5551 => 2,
+            VTFFormat.IMAGE_FORMAT_BGRX5551 => 2,
+            VTFFormat.IMAGE_FORMAT_UV88 => 2,
+
+            // 8-bit formats (1 byte)
+            VTFFormat.IMAGE_FORMAT_I8 => 1,
+            VTFFormat.IMAGE_FORMAT_A8 => 1,
+            VTFFormat.IMAGE_FORMAT_P8 => 1,
+
+            // Compressed formats (special handling)
+            VTFFormat.IMAGE_FORMAT_DXT1 => 8,  // block size for DXT1
+            VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => 8,
+            VTFFormat.IMAGE_FORMAT_DXT3 => 16,  // block size for DXT3
+            VTFFormat.IMAGE_FORMAT_DXT5 => 16,  // block size for DXT5
+
+            // Default to 4 bytes
+            _ => 4
+        };
     }
 
     /// <summary>
     /// Converts an ImageFormat to a Veldrid PixelFormat.
     /// </summary>
-    public static Veldrid.PixelFormat GetVeldridPixelFormat(VTFFormat format) =>
-        format switch
-        {
-            // 32-bit formats with alpha
-            VTFFormat.IMAGE_FORMAT_RGBA8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_BGRA8888 => Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
-
-            // 16-bit float format with alpha
-            VTFFormat.IMAGE_FORMAT_RGBA16161616F => Veldrid.PixelFormat.R16_G16_B16_A16_Float,
-
-            // 16-bit unsigned normalized RGBA
-            VTFFormat.IMAGE_FORMAT_RGBA16161616 => Veldrid.PixelFormat.R16_G16_B16_A16_UNorm,
-
-            // Compressed formats, fallback to R8_G8_B8_A8_UNorm since we decompress on CPU
-            VTFFormat.IMAGE_FORMAT_DXT1 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_DXT1_ONEBITALPHA => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_DXT3 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_DXT5 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-
-            // Single channel grayscale
-            VTFFormat.IMAGE_FORMAT_I8 => Veldrid.PixelFormat.R8_UNorm,
-
-            // Two channel (Intensity + Alpha)
-            VTFFormat.IMAGE_FORMAT_IA88 => Veldrid.PixelFormat.R8_G8_UNorm,
-
-            // 24-bit RGB (no alpha) - no exact 24-bit RGB in Veldrid,
-            // fallback to R8_G8_B8_A8_UNorm and handle alpha=1 in shader or code
-            VTFFormat.IMAGE_FORMAT_RGB888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_BGR888 => Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
-
-            // 16-bit packed RGB565 (no alpha)
-            VTFFormat.IMAGE_FORMAT_RGB565 => Veldrid.PixelFormat.R16_UNorm, // no direct RGB565 in Veldrid, fallback to R16_UNorm (or handle manually)
-            VTFFormat.IMAGE_FORMAT_BGR565 => Veldrid.PixelFormat.R16_UNorm,
-
-            // 16-bit packed BGRA4444 or BGRA5551 - no direct equivalent in Veldrid, fallback
-            VTFFormat.IMAGE_FORMAT_BGRA4444 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_BGRA5551 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_BGRX5551 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-
-            // Palettized / unknown formats fallback
-            VTFFormat.IMAGE_FORMAT_P8 => Veldrid.PixelFormat.R8_UNorm,
-            VTFFormat.IMAGE_FORMAT_A8 => Veldrid.PixelFormat.R8_UNorm,
-
-            // UV formats fallback to RG formats or 4 channels depending on assumed layout
-            VTFFormat.IMAGE_FORMAT_UV88 => Veldrid.PixelFormat.R8_G8_UNorm,
-            VTFFormat.IMAGE_FORMAT_UVWQ8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_UVLX8888 => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-
-            // Bluescreen formats fallback to RGB888 variants with alpha = 1
-            VTFFormat.IMAGE_FORMAT_RGB888_BLUESCREEN => Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
-            VTFFormat.IMAGE_FORMAT_BGR888_BLUESCREEN => Veldrid.PixelFormat.B8_G8_R8_A8_UNorm,
-
-            // None / unknown
-            VTFFormat.IMAGE_FORMAT_NONE => throw new InvalidDataException("VTF format NONE is invalid for pixel data."),
-
-            // Default fallback
-            _ => LogAndFallback(format)
-        };
-
-    private static Veldrid.PixelFormat LogAndFallback(VTFFormat format)
+    public static Veldrid.PixelFormat GetVeldridPixelFormat(VTFFormat format)
     {
+        if (format == VTFFormat.IMAGE_FORMAT_NONE)
+            throw new InvalidDataException("VTF format NONE is invalid for pixel data.");
+
+        if (PixelFormatMap.TryGetValue(format, out var pixelFormat))
+            return pixelFormat;
+
         Console.Error.WriteLine($"[VTFImporter] Unsupported VTF format: {format}");
         return Veldrid.PixelFormat.R8_UNorm;
     }
