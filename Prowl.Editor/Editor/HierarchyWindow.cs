@@ -351,11 +351,15 @@ public class HierarchyWindow : EditorWindow
                 double textSizeY = Font.DefaultFont.CalcTextSize(name, 20).y;
                 double centerY = rect.y + (rect.height / 2) - (textSizeY / 2);
 
-                // Give prefabs an icon
+                // Hierarchy Icons
                 if (isPrefab)
                 {
-                    gui.Draw2D.DrawText(Font.DefaultFont, FontAwesome6.CubesStacked, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
-                    leftOffset += 15; // Give room for icon
+                    gui.Draw2D.DrawText(Font.DefaultFont, FontAwesome6.CubesStacked, 20, new Vector2(rect.x + leftOffset, centerY + 3), new Color(0.85f, 0.85f, 0.85f), 0, textRect);
+                    leftOffset += 20; // Give room for icon
+                } else
+                {
+                    gui.Draw2D.DrawText(Font.DefaultFont, FontAwesome6.LayerGroup, 20, new Vector2(rect.x + leftOffset, centerY + 3), new Color(0.85f, 0.85f, 0.85f), 0, textRect);
+                    leftOffset += 20; // Give room for icon
                 }
 
                 gui.Draw2D.DrawText(Font.DefaultFont, name, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
