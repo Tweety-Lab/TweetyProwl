@@ -214,7 +214,7 @@ public class EditorWindow
 
     private void TabNode(int i, EditorWindow window, Vector2 textSize)
     {
-        using (gui.Node("Tab _" + window.Title, window._id).Width(textSize.x + 20).ExpandHeight().Enter())
+        using (gui.Node("Tab _" + window.Title, window._id).Width(textSize.x + 35).ExpandHeight().Enter())
         {
             var tabRect = gui.CurrentNode.LayoutData.InnerRect;
 
@@ -234,18 +234,19 @@ public class EditorWindow
                     else
                         gui.Draw2D.DrawRectFilled(tabRect, EditorStylePrefs.Instance.Borders, (float)EditorStylePrefs.Instance.TabRoundness, CornerRounding.Top);
                 }
+            }
 
-                using (gui.Node("_CloseButton").Width(20).Height(20).Left(Offset.Percentage(1f, -23)).Top(3).Enter())
+
+            using (gui.Node("_CloseButton").Width(20).Height(20).Left(Offset.Percentage(1f, -23)).Top(3).Enter())
+            {
+                if (gui.IsPointerHovering() && gui.IsPointerClick())
                 {
-                    gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.InnerRect, new Color(1, 1, 1, 150), 5);
-                    if (gui.IsPointerHovering() && gui.IsPointerClick())
-                    {
-                        if (window.IsDocked)
-                            EditorGuiManager.Container.DetachWindow(window);
-                        EditorGuiManager.Remove(window);
-                    }
-                    gui.Draw2D.DrawText(FontAwesome6.Xmark, gui.CurrentNode.LayoutData.InnerRect, gui.IsPointerHovering() ? EditorStylePrefs.Instance.Hovering : Color.white);
+                    if (window.IsDocked)
+                        EditorGuiManager.Container.DetachWindow(window);
+                    EditorGuiManager.Remove(window);
                 }
+
+                gui.Draw2D.DrawText(FontAwesome6.Xmark, 18, gui.CurrentNode.LayoutData.InnerRect, gui.IsPointerHovering() ? Color.white : new Color(0.6f, 0.6f, 0.6f));
             }
 
             var pos = gui.CurrentNode.LayoutData.InnerRect.Position;
