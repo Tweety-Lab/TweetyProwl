@@ -352,7 +352,7 @@ public class HierarchyWindow : EditorWindow
                 double centerY = rect.y + (rect.height / 2) - (textSizeY / 2);
 
                 // Give prefabs an icon
-                if (isPrefab || isPartOfPrefab)
+                if (isPrefab)
                 {
                     gui.Draw2D.DrawText(Font.DefaultFont, FontAwesome6.CubesStacked, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
                     leftOffset += 15; // Give room for icon
