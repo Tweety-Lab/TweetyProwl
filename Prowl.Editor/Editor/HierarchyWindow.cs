@@ -233,8 +233,8 @@ public class HierarchyWindow : EditorWindow
 
         if (!string.IsNullOrEmpty(_searchText) && !entity.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
         {
-            for (int i = 0; i < entity.children.Count; i++)
-                DrawGameObject(ref index, entity.children[i], depth);
+            for (int i = 0; i < entity.Children.Count; i++)
+                DrawGameObject(ref index, entity.Children[i], depth);
             return;
         }
 
@@ -247,7 +247,7 @@ public class HierarchyWindow : EditorWindow
         using (gui.Node(entity.GetHashCode().ToString()).Left(left).Top(index * (entryHeight + EntryPadding)).Width(width).Height(entryHeight).Enter())
         {
             goNodeID = gui.CurrentNode.ID;
-            float colMult = entity.enabledInHierarchy ? 1 : 0.5f;
+            float colMult = entity.EnabledInHierarchy ? 1 : 0.5f;
             bool isSelected = SelectHandler.IsSelected(new WeakReference(entity));
 
             double maxwidth = gui.CurrentNode.LayoutData.InnerRect.width;
@@ -305,7 +305,7 @@ public class HierarchyWindow : EditorWindow
                 }
             }
 
-            if (entity.children.Count > 0)
+            if (entity.Children.Count > 0)
             {
                 bool expanded = gui.GetNodeStorage<bool>(entity.InstanceID.ToString());
                 using (gui.Node("VisibilityBtn").Top(1).Width(22).Height(entryHeight).Enter())
@@ -318,12 +318,12 @@ public class HierarchyWindow : EditorWindow
 
                     Rect btnRect = gui.CurrentNode.LayoutData.Rect;
                     // btnRect.x -= 1;
-                    gui.Draw2D.DrawText(expanded ? FontAwesome6.ChevronDown : FontAwesome6.ChevronRight, 20, btnRect, entity.enabledInHierarchy ? Color.white : Color.white * (float)EditorStylePrefs.Instance.Disabled);
+                    gui.Draw2D.DrawText(expanded ? FontAwesome6.ChevronDown : FontAwesome6.ChevronRight, 20, btnRect, entity.EnabledInHierarchy ? Color.white : Color.white * (float)EditorStylePrefs.Instance.Disabled);
                 }
                 drawChildren = expanded;
             }
 
-            float leftOffset = entity.children.Count > 0 ? 25 : 7;
+            float leftOffset = entity.Children.Count > 0 ? 25 : 7;
 
             // Name
             string name = entity.Name;
@@ -357,6 +357,7 @@ public class HierarchyWindow : EditorWindow
                     gui.Draw2D.DrawText(Font.DefaultFont, FontAwesome6.CubesStacked, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
                     leftOffset += 15; // Give room for icon
                 }
+
                 gui.Draw2D.DrawText(Font.DefaultFont, name, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
             }
 
@@ -367,8 +368,8 @@ public class HierarchyWindow : EditorWindow
         if (drawChildren)
         {
             gui.PushID(goNodeID);
-            for (int i = 0; i < entity.children.Count; i++)
-                DrawGameObject(ref index, entity.children[i], depth + 1);
+            for (int i = 0; i < entity.Children.Count; i++)
+                DrawGameObject(ref index, entity.Children[i], depth + 1);
             gui.PopID();
         }
     }

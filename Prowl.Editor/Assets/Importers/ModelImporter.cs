@@ -760,7 +760,7 @@ public class ModelEditor : ScriptedEditor
     private int CountNodes(GameObject go)
     {
         int count = 1;
-        foreach (var child in go.children)
+        foreach (var child in go.Children)
             count += CountNodes(child);
         return count;
     }

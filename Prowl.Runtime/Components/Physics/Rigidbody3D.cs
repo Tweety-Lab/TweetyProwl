@@ -162,7 +162,7 @@ public sealed class Rigidbody3D : MonoBehaviour
         _body.Tag = new RigidBodyUserData()
         {
             Rigidbody = this,
-            Layer = GameObject.layerIndex,
+            Layer = GameObject.LayerIndex,
             //HasTransformConstraints = rotationConstraints != Vector3Int.one || translationConstraints != Vector3Int.one,
             //RotationConstraint = new JVector(rotationConstraints.x, rotationConstraints.y, rotationConstraints.z),
             //TranslationConstraint = new JVector(translationConstraints.x, translationConstraints.y, translationConstraints.z)
@@ -219,7 +219,7 @@ public sealed class Rigidbody3D : MonoBehaviour
         rb.Tag = new RigidBodyUserData()
         {
             Rigidbody = this,
-            Layer = GameObject.layerIndex,
+            Layer = GameObject.LayerIndex,
             //HasTransformConstraints = rotationConstraints != Vector3Int.one || translationConstraints != Vector3Int.one,
             //RotationConstraint = new JVector(rotationConstraints.x, rotationConstraints.y, rotationConstraints.z),
             //TranslationConstraint = new JVector(translationConstraints.x, translationConstraints.y, translationConstraints.z)

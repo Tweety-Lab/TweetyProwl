@@ -186,7 +186,7 @@ public class Transform : ICloneExplicit
 
     public Transform Parent
     {
-        get => gameObject?.parent?.Transform;
+        get => gameObject?.Parent?.Transform;
         set => gameObject?.SetParent(value.gameObject, true);
     }
 
@@ -233,7 +233,7 @@ public class Transform : ICloneExplicit
         _version++;
 
         // Invalidate children
-        foreach (GameObject child in gameObject.children)
+        foreach (GameObject child in gameObject.Children)
             child.Transform.InvalidateTransformCache();
     }
 
@@ -272,7 +272,7 @@ public class Transform : ICloneExplicit
 
     private Transform? FindImmediateChild(Transform parent, string name)
     {
-        foreach (var child in parent.gameObject.children)
+        foreach (var child in parent.gameObject.Children)
             if (child.Name == name)
                 return child.Transform;
         return null;
@@ -282,7 +282,7 @@ public class Transform : ICloneExplicit
     {
         if (name == null) return null;
         if (name == gameObject.Name) return this;
-        foreach (var child in gameObject.children)
+        foreach (var child in gameObject.Children)
         {
             var t = child.Transform.DeepFind(name);
             if (t != null) return t;

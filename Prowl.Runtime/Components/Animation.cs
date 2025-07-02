@@ -284,7 +284,7 @@ public class AnimationState
         MixingTransforms.Add(transform.gameObject.Name);
         if (recursive)
         {
-            foreach (var child in transform.gameObject.children)
+            foreach (var child in transform.gameObject.Children)
                 AddMixingTransform(child.Transform, true);
         }
     }
@@ -294,7 +294,7 @@ public class AnimationState
         MixingTransforms.Remove(transform.gameObject.Name);
         if (recursive)
         {
-            foreach (var child in transform.gameObject.children)
+            foreach (var child in transform.gameObject.Children)
                 RemoveMixingTransform(child.Transform, true);
         }
     }

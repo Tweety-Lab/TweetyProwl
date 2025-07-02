@@ -67,7 +67,7 @@ public class CloneGameObjectAction : AbstractAction
             throw new InvalidOperationException("Could not find GameObject with identifier: " + GameObject);
 
         _gameObject = go.DeepClone();
-        _parent = go.parent?.Identifier ?? Guid.Empty;
+        _parent = go.Parent?.Identifier ?? Guid.Empty;
 
         var clone = _gameObject.DeepClone(new(false));
         _clone = clone.Identifier;
@@ -108,7 +108,7 @@ public class DeleteGameObjectAction : AbstractAction
             throw new InvalidOperationException("Could not find GameObject with identifier: " + GameObject);
 
         _gameObject = go.DeepClone(new(false));
-        _parent = go.parent?.Identifier ?? Guid.Empty;
+        _parent = go.Parent?.Identifier ?? Guid.Empty;
 
         go.DestroyImmediate();
     }
@@ -148,7 +148,7 @@ public class SetParentAction : AbstractAction
 
         GameObject? parent = EngineObject.FindObjectByIdentifier<GameObject>(Parent);
 
-        OldParent = go.parent?.Identifier ?? Guid.Empty;
+        OldParent = go.Parent?.Identifier ?? Guid.Empty;
         go.SetParent(parent);
     }
 

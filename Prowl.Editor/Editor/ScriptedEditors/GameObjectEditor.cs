@@ -45,13 +45,13 @@ public class GameObjectEditor : ScriptedEditor
         if (go.hideFlags.HasFlag(HideFlags.NotEditable))
             gui.Draw2D.DrawText("This GameObject is not editable", gui.CurrentNode.LayoutData.InnerRect);
 
-        bool isEnabled = go.enabled;
+        bool isEnabled = go.Enabled;
         if (gui.Checkbox("IsEnabledChk", ref isEnabled, 0, 0, out _, InputStyle))
         {
-            UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, nameof(GameObject.enabled), isEnabled));
+            UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, nameof(GameObject.Enabled), isEnabled));
             //UndoRedoManager.SetMember(go, nameof(GameObject.enabled), isEnabled);
-            go.enabled = isEnabled;
-            Prefab.OnFieldChange(go, nameof(GameObject.enabled));
+            go.Enabled = isEnabled;
+            Prefab.OnFieldChange(go, nameof(GameObject.Enabled));
         }
         gui.Tooltip("Is Enabled");
 
@@ -68,29 +68,29 @@ public class GameObjectEditor : ScriptedEditor
         }
 
         WidgetStyle invisStyle = InputStyle with { BorderColor = new Color(0, 0, 0, 0) };
-        int tagIndex = go.tagIndex;
+        int tagIndex = go.TagIndex;
         if (gui.Combo("#_TagID", "#_TagPopupID", ref tagIndex, TagLayerManager.Instance.tags.ToArray(), Offset.Percentage(1f, -(ItemSize * 3)), 0, ItemSize, ItemSize, EditorGUI.InputStyle, null, FontAwesome6.Tag))
         {
-            UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, nameof(GameObject.tagIndex), (byte)tagIndex));
+            UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, nameof(GameObject.TagIndex), (byte)tagIndex));
             //UndoRedoManager.SetMember(go, nameof(GameObject.tagIndex), (byte)tagIndex);
-            go.tagIndex = (byte)tagIndex;
-            Prefab.OnFieldChange(go, nameof(GameObject.tagIndex));
+            go.TagIndex = (byte)tagIndex;
+            Prefab.OnFieldChange(go, nameof(GameObject.TagIndex));
         }
-        int layerIndex = go.layerIndex;
+        int layerIndex = go.LayerIndex;
         if (gui.Combo("#_LayerID", "#_LayerPopupID", ref layerIndex, TagLayerManager.Instance.layers.ToArray(), Offset.Percentage(1f, -(ItemSize * 2)), 0, ItemSize, ItemSize, EditorGUI.InputStyle, null, FontAwesome6.LayerGroup))
         {
-            UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, nameof(GameObject.layerIndex), (byte)layerIndex));
+            UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, nameof(GameObject.LayerIndex), (byte)layerIndex));
             //UndoRedoManager.SetMember(go, nameof(GameObject.layerIndex), (byte)layerIndex);
-            Prefab.OnFieldChange(go, nameof(GameObject.layerIndex));
+            Prefab.OnFieldChange(go, nameof(GameObject.LayerIndex));
         }
 
-        bool isStatic = go.isStatic;
+        bool isStatic = go.IsStatic;
         if (gui.Checkbox("IsStaticChk", ref isStatic, Offset.Percentage(1f, -(ItemSize)), 0, out _, InputStyle))
         {
-            var prop = go.GetType().GetProperty(nameof(GameObject.isStatic), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var prop = go.GetType().GetProperty(nameof(GameObject.IsStatic), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             UndoRedoManager.RecordAction(new ChangeFieldOnGameObjectAction(go, prop, isStatic));
             //UndoRedoManager.SetMember(go, go.GetType().GetProperty(nameof(GameObject.isStatic), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic), isStatic);
-            Prefab.OnFieldChange(go, nameof(GameObject.isStatic));
+            Prefab.OnFieldChange(go, nameof(GameObject.IsStatic));
         }
         gui.Tooltip("Is Static");
 

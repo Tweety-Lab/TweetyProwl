@@ -33,7 +33,7 @@ public class VolumetricSpotLight : SpotLight, IRenderable
         bounds = volumetricCone.bounds.Transform(Transform.localToWorldMatrix);
     }
 
-    public int GetLayer() => GameObject.layerIndex;
+    public int GetLayer() => GameObject.LayerIndex;
     public Material GetMaterial() => volumetricMaterial;
     public void GetRenderingData(out PropertyState properties, out IGeometryDrawData drawData, out Matrix4x4 model)
     {

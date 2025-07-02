@@ -61,7 +61,7 @@ public static class SceneManager
         Current.Res!.Add(go);
 
         GameObject cam = new("Main Camera");
-        cam.tag = "Main Camera";
+        cam.Tag = "Main Camera";
         cam.Transform.position = new(0, 0, -10);
         Camera camComp = cam.AddComponent<Camera>();
         camComp.Depth = -1;

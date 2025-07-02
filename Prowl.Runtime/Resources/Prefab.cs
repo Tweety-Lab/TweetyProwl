@@ -244,7 +244,7 @@ public sealed class PrefabLink
     /// returned.
     /// </summary>
     /// <seealso cref="GameObject.AffectedByPrefabLink"/>
-    public PrefabLink ParentLink => _obj.parent != null ? _obj.parent.AffectedByPrefabLink : null; // EngineObject, Cannot use Null Coalescing Operator
+    public PrefabLink ParentLink => _obj.Parent != null ? _obj.Parent.AffectedByPrefabLink : null; // EngineObject, Cannot use Null Coalescing Operator
 
 
     public PrefabLink() : this(null, null) { }
@@ -605,10 +605,10 @@ public sealed class PrefabLink
 
     private static int GetObjectHierarchyLevel(GameObject obj)
     {
-        if (obj.parent == null)
+        if (obj.Parent == null)
             return 0;
         else
-            return GetObjectHierarchyLevel(obj.parent) + 1;
+            return GetObjectHierarchyLevel(obj.Parent) + 1;
     }
 }
 

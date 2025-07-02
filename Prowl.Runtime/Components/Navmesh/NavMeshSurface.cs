@@ -327,7 +327,7 @@ public class NavMeshSurface : MonoBehaviour
         {
             foreach (var sBody in staticGeometry)
             {
-                if (sBody.EnabledInHierarchy && GeometryLayers.HasLayer(sBody.GameObject.layerIndex))
+                if (sBody.EnabledInHierarchy && GeometryLayers.HasLayer(sBody.GameObject.LayerIndex))
                     foreach (var collider in sBody.GameObject.GetComponentsInChildren<Collider>())
                         colliderData.Append(collider);
             }
@@ -336,7 +336,7 @@ public class NavMeshSurface : MonoBehaviour
         {
             foreach (var mRend in meshGeometry)
             {
-                if (mRend.EnabledInHierarchy && mRend.Mesh.IsAvailable && GeometryLayers.HasLayer(mRend.GameObject.layerIndex))
+                if (mRend.EnabledInHierarchy && mRend.Mesh.IsAvailable && GeometryLayers.HasLayer(mRend.GameObject.LayerIndex))
                 {
                     colliderData.shapeData.Add(mRend.Mesh.Res!);
                     colliderData.transformsOut.Add(mRend.Transform);
