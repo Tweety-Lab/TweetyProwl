@@ -67,12 +67,12 @@ public static class EditorGUI
         }
     }
 
-    public static bool StyledButton(string label)
+    public static bool StyledButton(string label, bool hasBorder = true)
     {
         var g = ActiveGUI;
         using (g.Node(label).ExpandWidth().Height(ItemSize).Enter())
         {
-            g.Draw2D.DrawRect(g.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Borders, 1, (float)EditorStylePrefs.Instance.ButtonRoundness);
+            g.Draw2D.DrawRect(g.CurrentNode.LayoutData.Rect, hasBorder ? EditorStylePrefs.Instance.Borders : Color.clear, 1, (float)EditorStylePrefs.Instance.ButtonRoundness);
 
             if (g.IsNodePressed())
             {

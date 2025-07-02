@@ -131,7 +131,7 @@ internal class MenuItem : Attribute
         if (menu == null) return false;
         if (menu.Children.Count == 0)
         {
-            if (EditorGUI.StyledButton(menu.Path))
+            if (EditorGUI.StyledButton(menu.Path, false))
             {
                 menu.Method?.Invoke();
                 return true;
@@ -139,7 +139,7 @@ internal class MenuItem : Attribute
         }
         else
         {
-            if (EditorGUI.StyledButton(menu.Path))
+            if (EditorGUI.StyledButton(menu.Path, false))
             {
                 Vector2 pos = Gui.ActiveGUI.PreviousNode.LayoutData.Rect.TopRight;
                 if (simpleRoot)
