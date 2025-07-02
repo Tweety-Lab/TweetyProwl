@@ -290,14 +290,6 @@ public class HierarchyWindow : EditorWindow
             // if (entity.children.Count > 0)
             //     gui.Draw2D.DrawRectFilled(rect.Min, new Vector2(22, entryHeight), EditorStylePrefs.Instance.Borders, (float)EditorStylePrefs.Instance.ButtonRoundness, 9);
 
-            if (isPrefab || isPartOfPrefab || !entity.enabledInHierarchy)
-            {
-                Color lineColor = (isPrefab ? EditorStylePrefs.Orange : EditorStylePrefs.Yellow);
-                if (!entity.enabledInHierarchy)
-                    lineColor = EditorStylePrefs.Instance.Warning;
-                gui.Draw2D.DrawLine(new Vector2(rect.x + entryHeight + 1, rect.y - 1), new Vector2(rect.x + entryHeight + 1, rect.y + entryHeight - 1), lineColor, 3);
-            }
-
             // if were pinging we need to open the tree to the pinged object
             if (s_pingTimer > 0 && s_pingedGO != null && s_pingedGO.Target is GameObject go)
             {
@@ -358,6 +350,13 @@ public class HierarchyWindow : EditorWindow
                 textRect.width -= entryHeight;
                 double textSizeY = Font.DefaultFont.CalcTextSize(name, 20).y;
                 double centerY = rect.y + (rect.height / 2) - (textSizeY / 2);
+
+                // Give prefabs an icon
+                if (isPrefab || isPartOfPrefab)
+                {
+                    gui.Draw2D.DrawText(Font.DefaultFont, FontAwesome6.CubesStacked, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
+                    leftOffset += 15; // Give room for icon
+                }
                 gui.Draw2D.DrawText(Font.DefaultFont, name, 20, new Vector2(rect.x + leftOffset, centerY + 3), Color.white, 0, textRect);
             }
 
