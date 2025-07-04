@@ -120,8 +120,11 @@ public class AssetsTreeWindow : EditorWindow
             }
             else
             {
-                // Render all root folders (assets, defaults, packages, etc.)
-                for (int i = 0; i < AssetDatabase.GetRootFolders().Count; i++)
+                // Render the last root folder first, this should be Assets based on the creation order in Project.cs
+                RenderRootFolder(true, AssetDatabase.GetRootFolderCache(AssetDatabase.GetRootFolders().Count - 1), new Color(0f, 0f, 0f, 0f));
+
+                // Render all root folders (defaults, packages, mounted games, etc.)
+                for (int i = 0; i < AssetDatabase.GetRootFolders().Count - 1; i++)
                     RenderRootFolder(false, AssetDatabase.GetRootFolderCache(i), new Color(0f, 0f, 0f, 0f));
             }
 
