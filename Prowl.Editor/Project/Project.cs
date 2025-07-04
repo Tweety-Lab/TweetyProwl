@@ -7,6 +7,7 @@ using System.Xml.Linq;
 
 using Prowl.Echo;
 using Prowl.Editor.Assets;
+using Prowl.Editor.Editor.ProjectSettings;
 using Prowl.Editor.ProjectSettings;
 using Prowl.Runtime;
 using Prowl.Runtime.SceneManagement;
@@ -110,6 +111,9 @@ public class Project
         Application.DataPath = project.ProjectPath;
 
         CreateDefaults(project);
+        if (SteamMountingPreferences.Instance.UseSteamMounting)
+            SteamMountingPreferences.RefreshMountedAssets();
+
         AssetDatabase.AddRootFolder("Defaults");
         AssetDatabase.Update(false, true); // Ensure defaults are all loaded in
 
