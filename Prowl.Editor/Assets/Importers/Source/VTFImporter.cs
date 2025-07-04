@@ -109,7 +109,6 @@ public class VTFImporter : ScriptedImporter
         [VTFFormat.IMAGE_FORMAT_UVLX8888] = Veldrid.PixelFormat.R8_G8_B8_A8_UNorm,
     };
 
-    [Header("VTF")]
     public TextureWrapMode TextureWrap = TextureWrapMode.Wrap;
 
     public enum MipmapGenerationMode { Default, DontGenerate, GenerateMipmaps}
