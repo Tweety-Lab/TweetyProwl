@@ -8,6 +8,8 @@ using Prowl.Runtime.Utils;
 using Sledge.Formats.Texture;
 using Sledge.Formats.Texture.Vtf;
 
+using Veldrid;
+
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Prowl.Editor.Assets.Importers.Source;
@@ -29,7 +31,7 @@ public class VTFImporter : ScriptedImporter
 
     public override void Import(SerializedAsset ctx, FileInfo assetPath)
     {
-        Texture2D texture = LoadVTFTexture(assetPath);
+        Texture2D texture = LoadVTFTexture(assetPath, true ? MipmapGeneration == MipmapGenerationMode.GenerateMipmaps : false);
 
         texture.Name = Path.GetFileNameWithoutExtension(assetPath.Name);
 
@@ -47,14 +49,27 @@ public class VTFImporter : ScriptedImporter
     /// </summary>
     /// <param name="assetPath">The path to the VTF file.</param>
     /// <returns>A Texture2D object containing the parsed texture.</returns>
-    public static Texture2D LoadVTFTexture(FileInfo assetPath)
+    public static Texture2D LoadVTFTexture(FileInfo assetPath, bool generateMipmaps)
     {
         // Start stream
         using var stream = assetPath.OpenRead();
 
         VtfFile vtf = new VtfFile(stream);
 
-        Texture2D texture = new Texture2D((uint)vtf.Images[^1].Width, (uint)vtf.Images[^1].Height, 0, Veldrid.PixelFormat.B8_G8_R8_A8_UNorm);
+        TextureUsage usage = TextureUsage.Sampled;
+
+        if (generateMipmaps)
+            usage |= TextureUsage.GenerateMipmaps;
+
+        Texture2D texture = new Texture2D(
+            (uint)vtf.Images[^1].Width,
+            (uint)vtf.Images[^1].Height,
+            0,
+            PixelFormat.B8_G8_R8_A8_UNorm,
+            usage
+        );
+
+        // Upload only the highest resolution image (for now)
         texture.SetData<byte>(vtf.Images[^1].GetBgra32Data());
 
         return texture;
@@ -73,10 +88,13 @@ public class VTFImporterEditor : ScriptedEditor
 
         if (EditorGUI.DrawProperty(0, "Mipmap Generation Mode", importer, "MipmapGeneration"))
             changes.Add(importer, nameof(VTFImporter.MipmapGeneration));
+
         if (EditorGUI.DrawProperty(1, "Min Filter", importer, "TextureMinFilter"))
             changes.Add(importer, nameof(VTFImporter.TextureMinFilter));
+
         if (EditorGUI.DrawProperty(2, "Mag Filter", importer, "TextureMagFilter"))
             changes.Add(importer, nameof(VTFImporter.TextureMagFilter));
+
         if (EditorGUI.DrawProperty(3, "Wrap Mode", importer, "TextureWrap"))
             changes.Add(importer, nameof(VTFImporter.TextureWrap));
 
