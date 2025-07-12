@@ -74,6 +74,7 @@
 
   <ItemGroup>
     <Folder Include="Utilities\SemanticVersion\" />
+    <Folder Include="Utilities\Source\" />
   </ItemGroup>
 
 </Project>
