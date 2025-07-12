@@ -1,6 +1,8 @@
 ﻿// This file is part of the Prowl Game Engine
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
+using Prowl.Editor.Docking;
+using Prowl.Editor.Editor;
 using Prowl.Editor.Preferences;
 using Prowl.Editor.Utilities;
 using Prowl.Icons;
@@ -19,7 +21,7 @@ public class SceneViewWindow : EditorWindow
     public static Camera LastFocusedCamera;
     private static bool LastFocusedCameraChanged;
 
-    readonly Camera Cam;
+    public readonly Camera Cam;
     RenderTexture RenderTarget;
     Vector2 WindowCenter;
     Vector2 mouseUV;
@@ -479,7 +481,7 @@ public class SceneViewWindow : EditorWindow
     {
         // TODO: Support custom Viewport Settings for tooling like A Terrain Editor having Brush Size, Strength, etc all in the Viewport
 
-        int buttonCount = 4;
+        int buttonCount = 5;
         double buttonSize = EditorStylePrefs.Instance.ItemSize;
 
         bool vertical = true;
@@ -538,6 +540,22 @@ public class SceneViewWindow : EditorWindow
                     gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Hovering, (float)EditorStylePrefs.Instance.ButtonRoundness);
             }
             gui.Tooltip("Open Editor Preferences", align: TooltipAlign.Right);
+
+
+            using (gui.Node("GeometryTools").Scale(buttonSize).Enter())
+            {
+                if (gui.IsNodePressed())
+                {
+                    GeometryToolsWindow window = new GeometryToolsWindow();
+
+                    EditorGuiManager.DockWindowTo(window, EditorGuiManager.Windows.FirstOrDefault(w => w is SceneViewWindow).Leaf, DockZone.Left);
+                }
+
+                gui.TextNode("Label", FontAwesome6.Building).Expand();
+                if (gui.IsNodeHovered())
+                    gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Hovering, (float)EditorStylePrefs.Instance.ButtonRoundness);
+            }
+            gui.Tooltip("Geo Tools", align: TooltipAlign.Right);
         }
     }
 
