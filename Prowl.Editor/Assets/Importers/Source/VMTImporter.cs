@@ -19,8 +19,8 @@ public class VMTImporter : ScriptedImporter
     // Map source shader names to Prowl shaders
     private Dictionary<string, string> shaderMap = new()
     {
-        { "unlitgeneric", "Default/StandardUnlit" },
-        { "lightmappedgeneric", "Default/Standard" }
+        { "unlitgeneric", "Defaults/StandardUnlit" },
+        { "lightmappedgeneric", "Defaults/Standard" }
     };
 
     public override void Import(SerializedAsset ctx, FileInfo assetPath)
@@ -34,8 +34,10 @@ public class VMTImporter : ScriptedImporter
         // Read Data
         string shaderName = shaderMap.GetValueOrDefault(keyValues.Name.ToLowerInvariant()) ?? keyValues.Name;
 
+        Console.WriteLine($"Loading shader: {shaderName}");
+
         // Load shader
-        AssetRef<Shader> shader = Application.AssetProvider.LoadAsset<Shader>(shaderName);
+        AssetRef<Shader> shader = Application.AssetProvider.LoadAsset<Shader>($"{shaderName}.shader");
 
         Material output = new Material(shader);
 
