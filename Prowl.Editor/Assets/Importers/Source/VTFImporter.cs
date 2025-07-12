@@ -4,13 +4,10 @@
 using Prowl.Runtime.GUI;
 using Prowl.Runtime.Rendering;
 using Prowl.Runtime.Utils;
-
-using Sledge.Formats.Texture;
 using Sledge.Formats.Texture.Vtf;
 
 using Veldrid;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Prowl.Editor.Assets.Importers.Source;
 
@@ -74,7 +71,6 @@ public class VTFImporter : ScriptedImporter
 
         return texture;
     }
-
 }
 
 [CustomEditor(typeof(VTFImporter))]
