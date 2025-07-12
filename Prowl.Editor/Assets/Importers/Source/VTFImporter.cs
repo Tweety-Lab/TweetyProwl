@@ -5,7 +5,8 @@ using Prowl.Runtime.GUI;
 using Prowl.Runtime.Rendering;
 using Prowl.Runtime.Utils;
 
-using SourceFormats.NET.VTF;
+using Sledge.Formats.Texture;
+using Sledge.Formats.Texture.Vtf;
 
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -51,11 +52,10 @@ public class VTFImporter : ScriptedImporter
         // Start stream
         using var stream = assetPath.OpenRead();
 
-        // Parse
-        VTFFile file = new VTFFile(stream);
+        VtfFile vtf = new VtfFile(stream);
 
-        Texture2D texture = new Texture2D((uint)file.Header.Width, (uint)file.Header.Height);
-        texture.SetData<byte>(file.MipMaps[0].PixelData);
+        Texture2D texture = new Texture2D((uint)vtf.Images[^1].Width, (uint)vtf.Images[^1].Height, 0, Veldrid.PixelFormat.B8_G8_R8_A8_UNorm);
+        texture.SetData<byte>(vtf.Images[^1].GetBgra32Data());
 
         return texture;
     }
