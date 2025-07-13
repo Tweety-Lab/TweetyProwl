@@ -28,11 +28,10 @@ public class NodePort
 
     public void ConnectTo(NodePort other)
     {
-        if (Direction == PortDirection.Output && other.Direction == PortDirection.Input)
-        {
+        if (!ConnectedPorts.Contains(other))
             ConnectedPorts.Add(other);
+        if (!other.ConnectedPorts.Contains(this))
             other.ConnectedPorts.Add(this);
-        }
     }
 
     public void DisconnectFrom(NodePort other)

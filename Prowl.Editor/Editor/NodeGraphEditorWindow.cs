@@ -19,10 +19,38 @@ public class NodeGraphEditorWindow : EditorWindow
     /// </summary>
     public NodeGraph OpenedGraph { get; set; }
 
+    // Currently selected port
+    private NodePort? _selectedPort;
+
+    private Dictionary<NodePort, Vector2> _globalPortPositions = new();
+
     public NodeGraphEditorWindow(NodeGraph graph) : base()
     {
         Title = FontAwesome6.CodeFork + "   Node Graph Editor";
         OpenedGraph = graph;
+
+        foreach (var node in OpenedGraph.Nodes)
+        {
+            node.OnPortClicked += (port) =>
+            {
+                if (_selectedPort != null && _selectedPort != port)
+                {
+                    // Only connect output -> input
+                    if (_selectedPort.Direction == PortDirection.Output && port.Direction == PortDirection.Input)
+                        _selectedPort.ConnectTo(port);
+                    else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input)
+                        port.ConnectTo(_selectedPort);
+
+                    Console.WriteLine($"Connected {_selectedPort.Name} to {port.Name}");
+
+                    _selectedPort = null;
+                }
+                else
+                {
+                    _selectedPort = port;
+                }
+            };
+        }
     }
 
     protected override void Draw()
@@ -31,6 +59,8 @@ public class NodeGraphEditorWindow : EditorWindow
         gui.CurrentNode.ScaleChildren();
         gui.CurrentNode.Spacing(10);
         gui.CurrentNode.Padding(10);
+
+        _globalPortPositions.Clear();
 
         if (OpenedGraph == null)
         {
@@ -59,7 +89,27 @@ public class NodeGraphEditorWindow : EditorWindow
         using (gui.Node("NodeArea").Layout(LayoutType.None).Expand().Enter())
         {
             for (int i = 0; i < OpenedGraph.Nodes.Count; i++)
-                OpenedGraph.Nodes[i].Draw(gui, i);
+            {
+                OpenedGraph.Nodes[i].Draw(gui, _globalPortPositions, i);
+            }
+        }
+
+        // Draw all connections
+        foreach (var node in OpenedGraph.Nodes)
+        {
+            foreach (var port in node.Inputs.Concat(node.Outputs))
+            {
+                foreach (var connected in port.ConnectedPorts)
+                {
+                    Console.WriteLine($"Trying to draw connection: {port.Name} -> {connected.Name}");
+                    if (_globalPortPositions.TryGetValue(port, out var a) &&
+                        _globalPortPositions.TryGetValue(connected, out var b))
+                    {
+                        Console.WriteLine($"Drawing line from {a} to {b}");
+                        gui.Draw2D.DrawLine(a, b, Color.white);
+                    }
+                }
+            }
         }
 
     }

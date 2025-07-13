@@ -28,7 +28,12 @@ public class Node
 
     // IO
     public virtual List<NodePort> Inputs { get; } = [new NodePort("Test Input", PortDirection.Input, 0)];
-    public virtual List<NodePort> Outputs { get; } = [new NodePort("Test Output", PortDirection.Input, 0)];
+    public virtual List<NodePort> Outputs { get; } = [new NodePort("Test Output", PortDirection.Output, 0)];
+
+    /// <summary>
+    /// Runs when a Node connection port is clicked.
+    /// </summary>
+    public Action<NodePort> OnPortClicked { get; set; }
 
 
     /// <summary>
@@ -38,7 +43,6 @@ public class Node
 
     private bool _isDragging = false;
     private Vector2 _dragOffset;
-    private Dictionary<NodePort, Vector2> _ports = new(); // <Position, Port>
 
     public void ConnectPorts(NodePort outputPort, NodePort inputPort) => outputPort.ConnectTo(inputPort);
     public void DisconnectPorts(NodePort outputPort, NodePort inputPort) => outputPort.DisconnectFrom(inputPort);
@@ -46,7 +50,7 @@ public class Node
     /// <summary>
     /// Draw the visuals of the Node.
     /// </summary>
-    public virtual void Draw(Gui gui, int id)
+    public virtual void Draw(Gui gui, Dictionary<NodePort, Vector2> ports, int id)
     {
         using (gui.Node("Node", id).Width(200).Height(100).Left(Position.x).Top(Position.y).Layout(LayoutType.Column).Enter())
         {
@@ -85,19 +89,19 @@ public class Node
                 using (gui.Node("Inputs").ExpandHeight().Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
                 {
                     foreach (var input in Inputs)
-                        DrawPort(gui, input);
+                        DrawPort(gui, input, ports);
                 }
 
                 using (gui.Node("Outputs").ExpandHeight().Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
                 {
                     foreach (var output in Outputs)
-                        DrawPort(gui, output, alignRight: true);
+                        DrawPort(gui, output, ports, alignRight: true);
                 }
             }
         }
     }
 
-    private void DrawPort(Gui gui, NodePort port, bool alignRight = false)
+    private void DrawPort(Gui gui, NodePort port, Dictionary<NodePort, Vector2> globalPorts, bool alignRight = false)
     {
         using (gui.Node("Port", port.Index).Height(20).Layout(LayoutType.Row).Spacing(5).Enter())
         {
@@ -115,8 +119,7 @@ public class Node
                 // Left-aligned socket + text
                 Vector2 textPos = basePos + new Vector2(10, textOffsetY);
                 socketPos = basePos + new Vector2(0, socketOffsetY);
-                if (!_ports.ContainsKey(port))
-                    _ports[port] = socketPos;
+                globalPorts[port] = socketPos;
 
                 gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
@@ -126,8 +129,7 @@ public class Node
                 // Right-aligned socket + text
                 Vector2 textPos = basePos + new Vector2(40, textOffsetY); // HACK: moved 100px right
                 socketPos = rect.TopRight + new Vector2(100, socketOffsetY); // HACK: moved 100px right
-                if (!_ports.ContainsKey(port))
-                    _ports[port] = socketPos;
+                globalPorts[port] = socketPos;
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
                 gui.Node("Spacer").Expand();
@@ -137,11 +139,7 @@ public class Node
             // Check click on selection area
             Rect selectionRect = new Rect(socketPos.x - 5f, socketPos.y - 5f, 10f, 10f);
             if (gui.IsPointerClick() && gui.IsNodeHovered(selectionRect))
-                Console.WriteLine($"Clicked on {port.Name}");
-
-            // Draw connections
-            foreach (var connectedPort in port.ConnectedPorts)
-                gui.Draw2D.DrawLine(_ports[port], _ports[connectedPort], Color.white);
+                OnPortClicked?.Invoke(port);
         }
     }
 }
