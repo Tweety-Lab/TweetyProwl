@@ -40,7 +40,7 @@ public class NodeGraphEditorWindow : EditorWindow
         {
             gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Borders);
             if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Node", 80, 25, false))
-                OpenedGraph.Nodes.Add(new Node { Name = "Node " + OpenedGraph.Nodes.Count });
+                OpenedGraph.Nodes.Add(new Node());
         }
 
         // DEBUG: Make node on space

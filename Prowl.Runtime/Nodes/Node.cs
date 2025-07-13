@@ -16,8 +16,16 @@ public class Node
     /// <summary>
     /// Name/Title of the Node.
     /// </summary>
-    public virtual string Name { get; set; } = $"{FontAwesome6.CircleNodes} Node";
+    public virtual string Name { get; } = $"{FontAwesome6.CircleNodes} Node";
 
+    /// <summary>
+    /// Visual Color of the Node.
+    /// </summary>
+    public virtual Color Color { get; set; } = new Color(51, 104, 176, 255);
+
+    /// <summary>
+    /// Position of the Node in the Graph.
+    /// </summary>
     public Vector2 Position = new(100, 100);
 
     private bool _isDragging = false;
@@ -31,12 +39,12 @@ public class Node
         using (gui.Node("Node", id).Width(200).Height(100).Left(Position.x).Top(Position.y).Layout(LayoutType.Column).Enter())
         {
             // Header
-            using (gui.Node("Header", id).Height(25).ExpandWidth().Enter())
+            using (gui.Node("Header", id).Height(20).ExpandWidth().Enter())
             {
                 Interactable interact = gui.GetInteractable();
                 Rect rect = gui.CurrentNode.LayoutData.Rect;
 
-                gui.Draw2D.DrawRectFilled(rect, Color.white, 6, CornerRounding.Top);
+                gui.Draw2D.DrawRectFilled(rect, Color, 6, CornerRounding.Top);
 
                 // Start dragging
                 if (!_isDragging && interact.IsHovered() && gui.IsPointerDown(MouseButton.Left))
@@ -52,24 +60,15 @@ public class Node
                     else
                         _isDragging = false;
 
-                gui.Draw2D.DrawText(Name, 16, rect.Position + new Vector2(8, 4), Color.white);
+                gui.Draw2D.DrawText(Name, 16, rect.Position + new Vector2(8, 4), Color * 2f);
             }
 
             // Body
             using (gui.Node("Body", id).Expand().Enter())
             {
                 Rect bodyRect = gui.CurrentNode.LayoutData.Rect;
-                gui.Draw2D.DrawRectFilled(bodyRect, HashToColor(this.GetHashCode()), 6, CornerRounding.Bottom);
+                gui.Draw2D.DrawRectFilled(bodyRect, Color * 0.8f, 6, CornerRounding.Bottom);
             }
         }
-    }
-
-    private static Color HashToColor(int hash)
-    {
-        byte r = (byte)(128 + (hash >> 16 & 0x7F));
-        byte g = (byte)(128 + (hash >> 8 & 0x7F));
-        byte b = (byte)(128 + (hash & 0x7F));
-
-        return new Color32(r, g, b, 255);
     }
 }
