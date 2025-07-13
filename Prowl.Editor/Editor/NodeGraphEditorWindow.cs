@@ -35,6 +35,9 @@ public class NodeGraphEditorWindow : EditorWindow
         {
             gui.TextNode("NoGraph", "No Graph Opened.").Expand();
 
+            if (DragnDrop.Drop<NodeGraph>(out NodeGraph? graph))
+                OpenedGraph = graph;
+
             return;
         }
 
