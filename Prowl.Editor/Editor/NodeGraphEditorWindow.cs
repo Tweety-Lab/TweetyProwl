@@ -1,6 +1,7 @@
 ﻿// This file is part of the Prowl Game Engine
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
+using Prowl.Editor.Assets;
 using Prowl.Editor.Preferences;
 using Prowl.Icons;
 using Prowl.Runtime;
@@ -33,6 +34,7 @@ public class NodeGraphEditorWindow : EditorWindow
         if (OpenedGraph == null)
         {
             gui.TextNode("NoGraph", "No Graph Opened.").Expand();
+
             return;
         }
 
@@ -41,6 +43,9 @@ public class NodeGraphEditorWindow : EditorWindow
             gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Borders);
             if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Node", 80, 25, false))
                 OpenedGraph.Nodes.Add(new Node());
+
+            if (EditorGUI.StyledButton(FontAwesome6.FloppyDisk, 25, 25, false))
+                AssetDatabase.SaveAsset(OpenedGraph);
         }
 
         // DEBUG: Make node on space

@@ -16,6 +16,11 @@ public class NodePort
     public Color Color;
     public int Index;
 
+    /// <summary>
+    /// The Input node that this Output port is connected to.
+    /// </summary>
+    public NodePort ConnectedTo;
+
     public NodePort(string name, PortDirection dir, Color color, int index)
     {
         Name = name;

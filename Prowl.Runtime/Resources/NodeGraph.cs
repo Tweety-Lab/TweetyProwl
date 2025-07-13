@@ -14,5 +14,5 @@ public class NodeGraph : EngineObject
     /// <summary>
     /// All nodes in this graph.
     /// </summary>
-    public List<Node> Nodes { get; set; } = new();
+    public List<Node> Nodes = new();
 }
