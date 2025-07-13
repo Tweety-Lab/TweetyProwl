@@ -111,5 +111,4 @@ public class GeometryToolsWindow : EditorWindow
 
         lassoPoints.Clear();
     }
-
 }
