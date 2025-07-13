@@ -12,6 +12,7 @@ using Prowl.Icons;
 using Prowl.Runtime;
 using Prowl.Runtime.Cloning;
 using Prowl.Runtime.GUI;
+using Prowl.Runtime.Resources;
 using Prowl.Runtime.SceneManagement;
 
 namespace Prowl.Editor;
@@ -497,6 +498,27 @@ public static class EditorGuiManager
         AssetDatabase.Update();
         AssetDatabase.Ping(file);
     }
+
+    [MenuItem("Assets/Create/Node Graph")]
+    public static void CreateNodeGraph()
+    {
+        Directory ??= Project.Active.AssetDirectory;
+
+        FileInfo file = new FileInfo(Path.Combine(Directory.FullName, $"New Node Graph.graph"));
+        AssetDatabase.GenerateUniqueAssetPath(ref file);
+
+        NodeGraph graph = new NodeGraph();
+        Serializer.Serialize(graph).WriteToString(file);
+
+        if (fromAssetBrowser)
+            AssetsBrowserWindow.StartRename(file.FullName);
+        else
+            AssetsTreeWindow.StartRename(file.FullName);
+
+        AssetDatabase.Update();
+        AssetDatabase.Ping(file);
+    }
+
 
     [MenuItem("Assets/Create/Prefab")]
     public static void CreatePrefab()

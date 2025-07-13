@@ -5,6 +5,7 @@ using Prowl.Editor.Utilities;
 using Prowl.Icons;
 using Prowl.Runtime;
 using Prowl.Runtime.GUI;
+using Prowl.Runtime.Rendering;
 using Prowl.Runtime.Rendering.Pipelines;
 using Prowl.Runtime.SceneManagement;
 
