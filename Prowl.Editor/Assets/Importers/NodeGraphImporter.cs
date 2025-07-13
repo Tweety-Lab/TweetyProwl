@@ -4,6 +4,7 @@
 using Prowl.Echo;
 using Prowl.Editor.Assets.Importers.Source;
 using Prowl.Editor.Editor;
+using Prowl.Runtime;
 using Prowl.Runtime.GUI;
 using Prowl.Runtime.Resources;
 using Prowl.Runtime.Utils;
@@ -26,13 +27,15 @@ public class NodeGraphEditor : ScriptedEditor
 {
     public override void OnInspectorGUI(EditorGUI.FieldChanges changes)
     {
-        var importer = (NodeGraphImporter)(target as MetaFile).importer;
+        // Load asset info
+        var meta = target as MetaFile;
+        var importer = meta?.importer as NodeGraphImporter;
+        var graph = Application.AssetProvider.LoadAsset<NodeGraph>(meta.guid);
 
+        // Draw
         gui.CurrentNode.Layout(LayoutType.Column);
         EditorGUI.Text("Node Graph");
         if (EditorGUI.StyledButton("Edit"))
-        {
-            new NodeGraphEditorWindow((target as NodeGraph));
-        }
+            new NodeGraphEditorWindow(graph.Res);
     }
 }
