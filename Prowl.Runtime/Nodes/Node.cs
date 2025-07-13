@@ -3,6 +3,7 @@
 
 
 
+using System;
 using System.Collections.Generic;
 
 using Prowl.Icons;
@@ -26,8 +27,9 @@ public class Node
     public virtual Color Color { get; set; } = new Color(51, 104, 176, 255);
 
     // IO
-    public virtual List<NodePort> Inputs { get; } = [new NodePort("Test Input", PortDirection.Input, Color.white, 0)];
-    public virtual List<NodePort> Outputs { get; } = [new NodePort("Test Output", PortDirection.Input, Color.white, 0)];
+    public virtual List<NodePort> Inputs { get; } = [new NodePort("Test Input", PortDirection.Input, 0)];
+    public virtual List<NodePort> Outputs { get; } = [new NodePort("Test Output", PortDirection.Input, 0)];
+
 
     /// <summary>
     /// Position of the Node in the Graph.
@@ -36,6 +38,10 @@ public class Node
 
     private bool _isDragging = false;
     private Vector2 _dragOffset;
+    private Dictionary<NodePort, Vector2> _ports = new(); // <Position, Port>
+
+    public void ConnectPorts(NodePort outputPort, NodePort inputPort) => outputPort.ConnectTo(inputPort);
+    public void DisconnectPorts(NodePort outputPort, NodePort inputPort) => outputPort.DisconnectFrom(inputPort);
 
     /// <summary>
     /// Draw the visuals of the Node.
@@ -102,25 +108,40 @@ public class Node
             const float socketOffsetY = 10f;
             const float textOffsetY = 5f;
 
+            Vector2 socketPos;
+
             if (!alignRight)
             {
                 // Left-aligned socket + text
-                Vector2 socketPos = basePos + new Vector2(0, socketOffsetY);
                 Vector2 textPos = basePos + new Vector2(10, textOffsetY);
+                socketPos = basePos + new Vector2(0, socketOffsetY);
+                if (!_ports.ContainsKey(port))
+                    _ports[port] = socketPos;
 
-                gui.Draw2D.DrawCircle(socketPos, socketRadius, port.Color, thickness: 2.5f);
+                gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
             }
             else
             {
                 // Right-aligned socket + text
                 Vector2 textPos = basePos + new Vector2(40, textOffsetY); // HACK: moved 100px right
-                Vector2 socketPos = rect.TopRight + new Vector2(100, socketOffsetY); // HACK: moved 100px right
+                socketPos = rect.TopRight + new Vector2(100, socketOffsetY); // HACK: moved 100px right
+                if (!_ports.ContainsKey(port))
+                    _ports[port] = socketPos;
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
                 gui.Node("Spacer").Expand();
-                gui.Draw2D.DrawCircle(socketPos, socketRadius, port.Color, thickness: 2.5f);
+                gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
             }
+
+            // Check click on selection area
+            Rect selectionRect = new Rect(socketPos.x - 5f, socketPos.y - 5f, 10f, 10f);
+            if (gui.IsPointerClick() && gui.IsNodeHovered(selectionRect))
+                Console.WriteLine($"Clicked on {port.Name}");
+
+            // Draw connections
+            foreach (var connectedPort in port.ConnectedPorts)
+                gui.Draw2D.DrawLine(_ports[port], _ports[connectedPort], Color.white);
         }
     }
 }
