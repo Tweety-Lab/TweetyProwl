@@ -10,6 +10,8 @@ using Prowl.Runtime.Nodes;
 using Prowl.Runtime.Nodes.Shader;
 using Prowl.Runtime.Resources;
 
+using SharpGen.Runtime;
+
 namespace Prowl.Editor.Editor;
 
 public class NodeGraphEditorWindow : EditorWindow
@@ -97,20 +99,21 @@ public class NodeGraphEditorWindow : EditorWindow
         // Draw all connections
         foreach (var node in OpenedGraph.Nodes)
         {
-            foreach (var port in node.Inputs.Concat(node.Outputs))
+            foreach (var port in node.Outputs) // Only outputs to avoid double
             {
                 foreach (var connected in port.ConnectedPorts)
                 {
-                    Console.WriteLine($"Trying to draw connection: {port.Name} -> {connected.Name}");
                     if (_globalPortPositions.TryGetValue(port, out var a) &&
                         _globalPortPositions.TryGetValue(connected, out var b))
                     {
-                        Console.WriteLine($"Drawing line from {a} to {b}");
-                        gui.Draw2D.DrawLine(a, b, Color.white);
+                        float offset = MathF.Abs((float)(b.x - a.x)) * 0.5f;
+                        Vector2 controlA = a + new Vector2(offset, 0f);
+                        Vector2 controlB = b - new Vector2(offset, 0f);
+
+                        gui.Draw2D.DrawBezierLine(a, controlA, b, controlB, Color.white, 3f);
                     }
                 }
             }
         }
-
     }
 }
