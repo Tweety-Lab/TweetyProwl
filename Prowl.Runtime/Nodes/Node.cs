@@ -121,8 +121,12 @@ public class Node
                 socketPos = basePos + new Vector2(0, socketOffsetY);
                 globalPorts[port] = socketPos;
 
-                gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
+
+                if (port.ConnectedPorts.Count > 0)
+                    gui.Draw2D.DrawCircleFilled(socketPos, socketRadius, Color.white);
+                else
+                    gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
             }
             else
             {
@@ -133,7 +137,11 @@ public class Node
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
                 gui.Node("Spacer").Expand();
-                gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
+
+                if (port.ConnectedPorts.Count > 0)
+                    gui.Draw2D.DrawCircleFilled(socketPos, socketRadius, Color.white);
+                else
+                    gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
             }
 
             // Check click on selection area
