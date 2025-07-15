@@ -41,8 +41,8 @@ public class Node
     /// </summary>
     public Vector2 Position = new(100, 100);
 
-    private bool _isDragging = false;
-    private Vector2 _dragOffset;
+    protected bool _isDragging = false;
+    protected Vector2 _dragOffset;
 
     public void ConnectPorts(NodePort outputPort, NodePort inputPort) => outputPort.ConnectTo(inputPort);
     public void DisconnectPorts(NodePort outputPort, NodePort inputPort) => outputPort.DisconnectFrom(inputPort);
