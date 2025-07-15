@@ -52,54 +52,69 @@ public class Node
     /// </summary>
     public virtual void Draw(Gui gui, Dictionary<NodePort, Vector2> ports, int id)
     {
-        // Calculate height based off port count
         float height = CalculateNodeHeight(Inputs.Count, Outputs.Count);
         using (gui.Node("Node", id).Width(200).Height(height).Left(Position.x).Top(Position.y).Layout(LayoutType.Column).Enter())
         {
-            // Header
-            using (gui.Node("Header", id).Height(20).ExpandWidth().Enter())
+            DrawHeader(gui, id);
+            DrawBody(gui, ports, id);
+        }
+    }
+
+    protected virtual void DrawHeader(Gui gui, int id)
+    {
+        using (gui.Node("Header", id).Height(20).ExpandWidth().Enter())
+        {
+            Interactable interact = gui.GetInteractable();
+            Rect rect = gui.CurrentNode.LayoutData.Rect;
+
+            gui.Draw2D.DrawRectFilled(rect, Color, 6, CornerRounding.Top);
+
+            if (!_isDragging && interact.IsHovered() && gui.IsPointerDown(MouseButton.Left))
             {
-                Interactable interact = gui.GetInteractable();
-                Rect rect = gui.CurrentNode.LayoutData.Rect;
-
-                gui.Draw2D.DrawRectFilled(rect, Color, 6, CornerRounding.Top);
-
-                // Start dragging
-                if (!_isDragging && interact.IsHovered() && gui.IsPointerDown(MouseButton.Left))
-                {
-                    _isDragging = true;
-                    _dragOffset = gui.PointerPos - Position;
-                }
-
-                // Perform drag
-                if (_isDragging)
-                    if (gui.IsPointerDown(MouseButton.Left))
-                        Position = gui.PointerPos - _dragOffset;
-                    else
-                        _isDragging = false;
-
-                gui.Draw2D.DrawText(Name, 16, rect.Position + new Vector2(8, 4), Color * 2f);
+                _isDragging = true;
+                _dragOffset = gui.PointerPos - Position;
             }
 
-            // Body
-            using (gui.Node("Body", id).Expand().Enter())
+            if (_isDragging)
             {
-                Rect bodyRect = gui.CurrentNode.LayoutData.Rect;
-                gui.Draw2D.DrawRectFilled(bodyRect, Color * 0.8f, 6, CornerRounding.Bottom);
-
-                gui.CurrentNode.Layout(LayoutType.Row);
-                using (gui.Node("Inputs").ExpandHeight().Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
-                {
-                    foreach (var input in Inputs)
-                        DrawPort(gui, input, ports);
-                }
-
-                using (gui.Node("Outputs").ExpandHeight().Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
-                {
-                    foreach (var output in Outputs)
-                        DrawPort(gui, output, ports, alignRight: true);
-                }
+                if (gui.IsPointerDown(MouseButton.Left))
+                    Position = gui.PointerPos - _dragOffset;
+                else
+                    _isDragging = false;
             }
+
+            gui.Draw2D.DrawText(Name, 16, rect.Position + new Vector2(8, 4), Color * 2f);
+        }
+    }
+
+    protected virtual void DrawBody(Gui gui, Dictionary<NodePort, Vector2> ports, int id)
+    {
+        using (gui.Node("Body", id).Expand().Enter())
+        {
+            Rect bodyRect = gui.CurrentNode.LayoutData.Rect;
+            gui.Draw2D.DrawRectFilled(bodyRect, Color * 0.8f, 6, CornerRounding.Bottom);
+
+            gui.CurrentNode.Layout(LayoutType.Row);
+            DrawInputPorts(gui, ports);
+            DrawOutputPorts(gui, ports);
+        }
+    }
+
+    protected virtual void DrawInputPorts(Gui gui, Dictionary<NodePort, Vector2> ports)
+    {
+        using (gui.Node("Inputs").Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
+        {
+            foreach (var input in Inputs)
+                DrawPort(gui, input, ports);
+        }
+    }
+
+    protected virtual void DrawOutputPorts(Gui gui, Dictionary<NodePort, Vector2> ports)
+    {
+        using (gui.Node("Outputs").Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
+        {
+            foreach (var output in Outputs)
+                DrawPort(gui, output, ports, alignRight: true);
         }
     }
 
