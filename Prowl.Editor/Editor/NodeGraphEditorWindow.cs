@@ -33,27 +33,7 @@ public class NodeGraphEditorWindow : EditorWindow
         OpenedGraph = graph;
 
         foreach (var node in OpenedGraph.Nodes)
-        {
-            node.OnPortClicked += (port) =>
-            {
-                if (_selectedPort != null && _selectedPort != port)
-                {
-                    // Only connect output to input
-                    if (_selectedPort.Direction == PortDirection.Output && port.Direction == PortDirection.Input)
-                        _selectedPort.ConnectTo(port);
-                    else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input)
-                        port.ConnectTo(_selectedPort);
-
-                    Console.WriteLine($"Connected {_selectedPort.Name} to {port.Name}");
-
-                    _selectedPort = null;
-                }
-                else
-                {
-                    _selectedPort = port;
-                }
-            };
-        }
+            node.OnPortClicked += HandlePortClicked;
     }
 
     protected override void Draw()
@@ -89,13 +69,10 @@ public class NodeGraphEditorWindow : EditorWindow
         if (gui.IsKeyPressed(Runtime.Key.Space))
             OpenedGraph.Nodes.Add(new Texture2DNode());
 
+        // Node Area
         using (gui.Node("NodeArea").Layout(LayoutType.None).Expand().Enter())
-        {
             for (int i = 0; i < OpenedGraph.Nodes.Count; i++)
-            {
                 OpenedGraph.Nodes[i].Draw(gui, _globalPortPositions, i);
-            }
-        }
 
         // Draw all connections
         foreach (var node in OpenedGraph.Nodes)
@@ -118,13 +95,27 @@ public class NodeGraphEditorWindow : EditorWindow
         }
 
         // Draw connection from selected port to mouse
-        if (_selectedPort != null)
+        if (_selectedPort == null || !_globalPortPositions.TryGetValue(_selectedPort, out var from))
+            return;
+
+        Vector2 to = gui.PointerPos;
+        gui.Draw2D.DrawLine(from, to, Color.white, 3f);
+    }
+
+    private void HandlePortClicked(NodePort port)
+    {
+        if (_selectedPort == null || _selectedPort == port)
         {
-            if (_globalPortPositions.TryGetValue(_selectedPort, out var from))
-            {
-                Vector2 to = gui.PointerPos;
-                gui.Draw2D.DrawLine(from, to, Color.white, 3f);
-            }
+            _selectedPort = port;
+            return;
         }
+
+        if (_selectedPort.Direction == PortDirection.Output && port.Direction == PortDirection.Input)
+            _selectedPort.ConnectTo(port);
+        else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input)
+            port.ConnectTo(_selectedPort);
+
+        Console.WriteLine($"Connected {_selectedPort.Name} to {port.Name}");
+        _selectedPort = null;
     }
 }
