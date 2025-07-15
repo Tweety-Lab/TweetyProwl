@@ -22,8 +22,6 @@ public class NodeGraphEditorWindow : EditorWindow
     // Currently selected port
     private NodePort? _selectedPort;
 
-    private Dictionary<NodePort, Vector2> _globalPortPositions = new();
-
     public NodeGraphEditorWindow(NodeGraph graph) : base()
     {
         Title = FontAwesome6.CodeFork + "   Node Graph Editor";
@@ -39,8 +37,6 @@ public class NodeGraphEditorWindow : EditorWindow
         gui.CurrentNode.ScaleChildren();
         gui.CurrentNode.Spacing(10);
         gui.CurrentNode.Padding(10);
-
-        _globalPortPositions.Clear();
 
         if (OpenedGraph == null)
         {
@@ -62,9 +58,18 @@ public class NodeGraphEditorWindow : EditorWindow
                 OpenedGraph.Nodes.Add(newNode);
             }
 
+            if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Debug Node", 80, 25, false))
+            {
+                var newNode = new Node();
+                newNode.OnPortClicked += HandlePortClicked;
+                OpenedGraph.Nodes.Add(newNode);
+            }
+
             if (EditorGUI.StyledButton(FontAwesome6.FloppyDisk, 25, 25, false))
                 AssetDatabase.SaveAsset(OpenedGraph);
         }
+
+        DrawNodeArea();
 
         // DEBUG: Make node on space
         if (gui.IsKeyPressed(Key.Space))
@@ -74,32 +79,33 @@ public class NodeGraphEditorWindow : EditorWindow
             OpenedGraph.Nodes.Add(newNode);
         }
 
-        DrawNodeArea();
+        DrawNodeConnections();
+    }
 
-        // Draw all connections
+    protected virtual void DrawNodeConnections()
+    {
         foreach (var node in OpenedGraph.Nodes)
         {
-            foreach (var port in node.Outputs) // Only outputs to avoid double lines
+            foreach (var port in node.Outputs)
             {
                 foreach (var connected in port.ConnectedPorts)
                 {
-                    if (_globalPortPositions.TryGetValue(port, out var a) &&
-                        _globalPortPositions.TryGetValue(connected, out var b))
-                    {
-                        float offset = MathF.Abs((float)(b.x - a.x)) * 0.5f;
-                        Vector2 controlA = a + new Vector2(offset, 0f);
-                        Vector2 controlB = b - new Vector2(offset, 0f);
+                    Vector2 a = port.Position;
+                    Vector2 b = connected.Position;
 
-                        gui.Draw2D.DrawBezierLine(a, controlA, b, controlB, Color.white, 3f);
-                    }
+                    float offset = MathF.Abs((float)(b.x - a.x)) * 0.5f;
+                    Vector2 controlA = a + new Vector2(offset, 0f);
+                    Vector2 controlB = b - new Vector2(offset, 0f);
+
+                    gui.Draw2D.DrawBezierLine(a, controlA, b, controlB, Color.white, 3f);
                 }
             }
         }
 
-        // Draw connection from selected port to mouse
-        if (_selectedPort == null || !_globalPortPositions.TryGetValue(_selectedPort, out var from))
+        if (_selectedPort == null)
             return;
 
+        Vector2 from = _selectedPort.Position;
         Vector2 to = gui.PointerPos;
         gui.Draw2D.DrawLine(from, to, Color.white, 3f);
     }
@@ -117,7 +123,6 @@ public class NodeGraphEditorWindow : EditorWindow
         else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input)
             port.ConnectTo(_selectedPort);
 
-        Console.WriteLine($"Connected {_selectedPort.Name} to {port.Name}");
         _selectedPort = null;
     }
 
@@ -125,6 +130,6 @@ public class NodeGraphEditorWindow : EditorWindow
     {
         using (gui.Node("NodeArea").Layout(LayoutType.None).Expand().Enter())
             for (int i = 0; i < OpenedGraph.Nodes.Count; i++)
-                OpenedGraph.Nodes[i].Draw(gui, _globalPortPositions, i);
+                OpenedGraph.Nodes[i].Draw(gui, i);
     }
 }

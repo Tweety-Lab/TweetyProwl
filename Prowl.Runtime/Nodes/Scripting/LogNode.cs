@@ -15,9 +15,9 @@ public class LogNode : ScriptNode
 
     public string Message;
 
-    public override object? Execute()
+    public override string Execute()
     {
         Debug.Log(Message);
-        return null;
+        return "Output";
     }
 }

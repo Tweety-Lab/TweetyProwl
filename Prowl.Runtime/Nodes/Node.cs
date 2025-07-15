@@ -50,13 +50,13 @@ public class Node
     /// <summary>
     /// Draw the visuals of the Node.
     /// </summary>
-    public virtual void Draw(Gui gui, Dictionary<NodePort, Vector2> ports, int id)
+    public virtual void Draw(Gui gui, int id)
     {
         float height = CalculateNodeHeight(Inputs.Count, Outputs.Count);
         using (gui.Node("Node", id).Width(200).Height(height).Left(Position.x).Top(Position.y).Layout(LayoutType.Column).Enter())
         {
             DrawHeader(gui, id);
-            DrawBody(gui, ports, id);
+            DrawBody(gui, id);
         }
     }
 
@@ -87,7 +87,7 @@ public class Node
         }
     }
 
-    protected virtual void DrawBody(Gui gui, Dictionary<NodePort, Vector2> ports, int id)
+    protected virtual void DrawBody(Gui gui, int id)
     {
         using (gui.Node("Body", id).Expand().Enter())
         {
@@ -95,30 +95,30 @@ public class Node
             gui.Draw2D.DrawRectFilled(bodyRect, Color * 0.8f, 6, CornerRounding.Bottom);
 
             gui.CurrentNode.Layout(LayoutType.Row);
-            DrawInputPorts(gui, ports);
-            DrawOutputPorts(gui, ports);
+            DrawInputPorts(gui);
+            DrawOutputPorts(gui);
         }
     }
 
-    protected virtual void DrawInputPorts(Gui gui, Dictionary<NodePort, Vector2> ports)
+    protected virtual void DrawInputPorts(Gui gui)
     {
         using (gui.Node("Inputs").Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
         {
             foreach (var input in Inputs)
-                DrawPort(gui, input, ports);
+                DrawPort(gui, input);
         }
     }
 
-    protected virtual void DrawOutputPorts(Gui gui, Dictionary<NodePort, Vector2> ports)
+    protected virtual void DrawOutputPorts(Gui gui)
     {
         using (gui.Node("Outputs").Width(100).Layout(LayoutType.Column).Spacing(5).Enter())
         {
             foreach (var output in Outputs)
-                DrawPort(gui, output, ports, alignRight: true);
+                DrawPort(gui, output, alignRight: true);
         }
     }
 
-    private void DrawPort(Gui gui, NodePort port, Dictionary<NodePort, Vector2> globalPorts, bool alignRight = false)
+    private void DrawPort(Gui gui, NodePort port, bool alignRight = false)
     {
         using (gui.Node("Port", port.Index).Height(20).Layout(LayoutType.Row).Spacing(5).Enter())
         {
@@ -129,40 +129,29 @@ public class Node
             const float socketOffsetY = 10f;
             const float textOffsetY = 5f;
 
-            Vector2 socketPos;
-
             if (!alignRight)
             {
-                // Left-aligned socket + text
                 Vector2 textPos = basePos + new Vector2(10, textOffsetY);
-                socketPos = basePos + new Vector2(0, socketOffsetY);
-                globalPorts[port] = socketPos;
+                port.Position = basePos + new Vector2(0, socketOffsetY);
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
-
+                gui.Draw2D.DrawCircle(port.Position, socketRadius, Color.white, thickness: 2.5f);
                 if (port.ConnectedPorts.Count > 0)
-                    gui.Draw2D.DrawCircleFilled(socketPos, socketRadius, Color.white);
-                else
-                    gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
+                    gui.Draw2D.DrawCircleFilled(port.Position, socketRadius, Color.white);
             }
             else
             {
-                // Right-aligned socket + text
-                Vector2 textPos = basePos + new Vector2(40, textOffsetY); // HACK: moved 100px right
-                socketPos = rect.TopRight + new Vector2(100, socketOffsetY); // HACK: moved 100px right
-                globalPorts[port] = socketPos;
+                Vector2 textPos = basePos + new Vector2(40, textOffsetY);
+                port.Position = rect.TopRight + new Vector2(100, socketOffsetY);
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
                 gui.Node("Spacer").Expand();
-
+                gui.Draw2D.DrawCircle(port.Position, socketRadius, Color.white, thickness: 2.5f);
                 if (port.ConnectedPorts.Count > 0)
-                    gui.Draw2D.DrawCircleFilled(socketPos, socketRadius, Color.white);
-                else
-                    gui.Draw2D.DrawCircle(socketPos, socketRadius, Color.white, thickness: 2.5f);
+                    gui.Draw2D.DrawCircleFilled(port.Position, socketRadius, Color.white);
             }
 
-            // Check click on selection area
-            Rect selectionRect = new Rect(socketPos.x - 5f, socketPos.y - 5f, 10f, 10f);
+            Rect selectionRect = new Rect(port.Position.x - 5f, port.Position.y - 5f, 10f, 10f);
             if (gui.IsPointerClick() && gui.IsNodeHovered(selectionRect))
                 OnPortClicked?.Invoke(port);
         }

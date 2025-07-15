@@ -72,29 +72,24 @@ public class ScriptNode : Node
                 gui.Draw2D.DrawTriangleFilled(p1, p2, p3, Color.white);
             else
                 gui.Draw2D.DrawTriangle(p1, p2, p3, Color.white, thickness: 1.5f);
-
-            // Interaction
-            Rect clickRect = new Rect(socketPos.x - 5, socketPos.y - 5, 10, 10);
-            if (gui.IsPointerClick() && gui.IsNodeHovered(clickRect))
-            {
-                OnPortClicked?.Invoke(new NodePort("Next", PortDirection.Output, -1)); // index -1: special "header" port
-            }
         }
     }
+
+    private List<NodePort> _inputs;
+    private List<NodePort> _outputs;
 
     public override List<NodePort> Inputs
     {
         get
         {
-            var ports = new List<NodePort>();
-
-            // Use reflection to find all instance fields on this type
-            var fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-            foreach (var field in fields)
-                ports.Add(new NodePort(RuntimeUtils.Prettify(field.Name), PortDirection.Input, ports.Count));
-
-            return ports;
+            if (_inputs == null)
+            {
+                _inputs = new List<NodePort>();
+                var fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                foreach (var field in fields)
+                    _inputs.Add(new NodePort(RuntimeUtils.Prettify(field.Name), PortDirection.Input, _inputs.Count));
+            }
+            return _inputs;
         }
     }
 
@@ -102,21 +97,19 @@ public class ScriptNode : Node
     {
         get
         {
-            var ports = new List<NodePort>();
-
-            // Use reflection to output the return value of Execute()
-            var method = GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            if (method != null)
+            if (_outputs == null)
             {
-                var returnType = method.ReturnType;
+                _outputs = new List<NodePort>();
+                var method = GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-                // Only add a port if the return type is not void or explicitly object (aka unknown)
-                if (returnType != typeof(void) && returnType != typeof(object))
-                    ports.Add(new NodePort(RuntimeUtils.Prettify(returnType.Name), PortDirection.Output, ports.Count));
+                if (method != null)
+                {
+                    var returnType = method.ReturnType;
+                    if (returnType != typeof(void) && returnType != typeof(object))
+                        _outputs.Add(new NodePort(RuntimeUtils.Prettify(returnType.Name), PortDirection.Output, _outputs.Count));
+                }
             }
-
-            return ports;
+            return _outputs;
         }
     }
 }
