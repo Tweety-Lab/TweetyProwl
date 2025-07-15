@@ -24,6 +24,7 @@ Modified version of the Prowl Game Engine.
 | Modern C# API Changes       | ✅ Complete    |
 | Source Engine File Support             | 🛠️ In Development |
 | Phong Shading             | 🛠️ In Development |
+| Visual Scripting             | 🛠️ In Development |
 | Volumetric Lighting                          | 🔄 Planned     |
 | Reflection Probes                          | 🔄 Planned     |
 ---
