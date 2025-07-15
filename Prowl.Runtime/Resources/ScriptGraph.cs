@@ -34,8 +34,11 @@ public class ScriptGraph : NodeGraph
         {
             current.Execute();
 
-            var nextOutputPort = current.Outputs.OfType<NextNodePort>().FirstOrDefault(p => p.Direction == PortDirection.Output);
-            current = GetNextScriptNode(nextOutputPort);
+            var nextOutput = current.Outputs.OfType<NextNodePort>()
+                                             .FirstOrDefault(p => p.Direction == PortDirection.Output)?
+                                             .ConnectedPorts?.FirstOrDefault()?.Node as ScriptNode;
+
+            current = nextOutput;
         }
     }
 

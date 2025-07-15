@@ -62,16 +62,16 @@ public class NodeGraphEditorWindow : EditorWindow
         using (gui.Node("TopBar").Layout(LayoutType.Row).ExpandWidth().MaxHeight(25).Enter())
         {
             gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Borders);
-            if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Node", 80, 25, false))
+            if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add OnInvoke Node", 80, 25, false))
             {
                 var newNode = new OnInvokeNode();
                 newNode.OnPortClicked += HandlePortClicked;
                 OpenedGraph.Nodes.Add(newNode);
             }
 
-            if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Debug Node", 80, 25, false))
+            if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Wait Node", 80, 25, false))
             {
-                var newNode = new Node();
+                var newNode = new WaitNode();
                 newNode.OnPortClicked += HandlePortClicked;
                 OpenedGraph.Nodes.Add(newNode);
             }

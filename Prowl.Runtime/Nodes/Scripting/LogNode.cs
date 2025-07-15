@@ -13,11 +13,10 @@ public class LogNode : ScriptNode
     public override string Name => $"{FontAwesome6.EnvelopeOpenText}    Log Message";
     public override Color Color => new(50, 135, 80);
 
-    public string Message;
-
-    public override string Execute()
+    public override object? Execute()
     {
-        Debug.Log(Message);
-        return "Output";
+        Debug.Log("Log Node Fired!");
+
+        return null;
     }
 }
