@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using Prowl.Echo;
 using Prowl.Runtime.GUI;
 
 namespace Prowl.Runtime.Nodes.Scripting;
@@ -26,7 +27,10 @@ public class ScriptNode : Node
     private readonly NextNodePort NextInputPort = new("Flow In", PortDirection.Input, -1);
     private readonly NextNodePort NextOutputPort = new("Flow Out", PortDirection.Output, -1);
 
+    [SerializeField]
     private List<NodePort> _inputs;
+
+    [SerializeField]
     private List<NodePort> _outputs;
 
     public override List<NodePort> Inputs

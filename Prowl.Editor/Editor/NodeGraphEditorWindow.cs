@@ -31,6 +31,17 @@ public class NodeGraphEditorWindow : EditorWindow
             node.OnPortClicked += HandlePortClicked;
     }
 
+    protected override void Close()
+    {
+        if (OpenedGraph == null)
+            return;
+
+        foreach (var node in OpenedGraph.Nodes)
+            node.OnPortClicked -= HandlePortClicked;
+
+        OpenedGraph = null;
+    }
+
     protected override void Draw()
     {
         gui.CurrentNode.Layout(LayoutType.Column);

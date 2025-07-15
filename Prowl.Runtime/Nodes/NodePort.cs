@@ -26,6 +26,11 @@ public class NodePort
 
     public List<NodePort> ConnectedPorts = new List<NodePort>();
 
+    public NodePort()
+    {
+
+    }
+
     public NodePort(string name, PortDirection dir, int index)
     {
         Name = name;

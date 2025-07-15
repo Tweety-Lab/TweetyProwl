@@ -14,6 +14,8 @@ public class NextNodePort : NodePort
 {
     public NextNodePort(string name, PortDirection dir, int index) : base(name, dir, index) { }
 
+    public NextNodePort() : base() { }
+
     public override void Draw(Gui gui)
     {
         const float size = 10f;
