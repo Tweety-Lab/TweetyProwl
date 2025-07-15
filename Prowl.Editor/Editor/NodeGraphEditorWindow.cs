@@ -69,13 +69,6 @@ public class NodeGraphEditorWindow : EditorWindow
                 OpenedGraph.Nodes.Add(newNode);
             }
 
-            if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Wait Node", 80, 25, false))
-            {
-                var newNode = new WaitNode();
-                newNode.OnPortClicked += HandlePortClicked;
-                OpenedGraph.Nodes.Add(newNode);
-            }
-
             if (EditorGUI.StyledButton(FontAwesome6.FloppyDisk, 25, 25, false))
                 AssetDatabase.SaveAsset(OpenedGraph);
         }

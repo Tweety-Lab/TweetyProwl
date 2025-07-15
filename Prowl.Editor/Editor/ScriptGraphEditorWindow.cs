@@ -9,9 +9,7 @@ namespace Prowl.Editor.Editor;
 
 public class ScriptGraphEditorWindow : NodeGraphEditorWindow
 {
-    public ScriptGraphEditorWindow(NodeGraph graph) : base(graph)
-    {
-    }
+    public ScriptGraphEditorWindow(NodeGraph graph) : base(graph) { }
 
     protected override void DrawNodeConnections()
     {

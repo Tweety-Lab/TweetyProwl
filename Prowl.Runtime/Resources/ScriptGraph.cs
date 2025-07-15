@@ -24,7 +24,7 @@ public class ScriptGraph : NodeGraph
             return;
 
         // Find the first output-type NextNodePort from the entry node
-        var startingPort = entryNode.Outputs.OfType<NextNodePort>().FirstOrDefault(p => p.Direction == PortDirection.Output);
+        var startingPort = entryNode.Outputs.OfType<FlowPort>().FirstOrDefault(p => p.Direction == PortDirection.Output);
         if (startingPort == null)
             return;
 
@@ -34,7 +34,7 @@ public class ScriptGraph : NodeGraph
         {
             current.Execute();
 
-            var nextOutput = current.Outputs.OfType<NextNodePort>()
+            var nextOutput = current.Outputs.OfType<FlowPort>()
                                              .FirstOrDefault(p => p.Direction == PortDirection.Output)?
                                              .ConnectedPorts?.FirstOrDefault()?.Node as ScriptNode;
 
@@ -45,7 +45,7 @@ public class ScriptGraph : NodeGraph
     /// <summary>
     /// Gets the next ScriptNode connected to a given NextNodePort.
     /// </summary>
-    private ScriptNode GetNextScriptNode(NextNodePort port)
+    private ScriptNode GetNextScriptNode(FlowPort port)
     {
         if (port == null)
             return null;

@@ -10,11 +10,11 @@ namespace Prowl.Runtime.Nodes.Scripting;
 /// <summary>
 /// Node Port for Node flow.
 /// </summary>
-public class NextNodePort : NodePort
+public class FlowPort : NodePort
 {
-    public NextNodePort(string name, PortDirection dir, int index, Node node) : base(name, dir, index, node) { }
+    public FlowPort(string name, PortDirection dir, int index, Node node) : base(name, dir, index, node) { }
 
-    public NextNodePort() : base() { }
+    public FlowPort() : base() { }
 
     public override void Draw(Gui gui)
     {
@@ -46,5 +46,5 @@ public class NextNodePort : NodePort
     }
 
     // Flow Ports can only connect to Flow ports
-    public override bool CanConnectTo(NodePort other) => other is NextNodePort;
+    public override bool CanConnectTo(NodePort other) => other is FlowPort;
 }

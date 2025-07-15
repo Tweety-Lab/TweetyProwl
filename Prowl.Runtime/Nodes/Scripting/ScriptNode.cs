@@ -31,7 +31,7 @@ public class ScriptNode : Node
         {
             if (_inputs == null)
             {
-                _inputs = new List<NodePort> { new NextNodePort("Flow In", PortDirection.Input, -1, this) }; // Add flow port first
+                _inputs = new List<NodePort> { new FlowPort("Flow In", PortDirection.Input, -1, this) }; // Add flow port first
                 var fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
                 foreach (var field in fields)
                     _inputs.Add(new NodePort(RuntimeUtils.Prettify(field.Name), PortDirection.Input, _inputs.Count, this));
@@ -46,7 +46,7 @@ public class ScriptNode : Node
         {
             if (_outputs == null)
             {
-                _outputs = new List<NodePort> { new NextNodePort("Flow Out", PortDirection.Output, -1, this) }; // Add flow port first
+                _outputs = new List<NodePort> { new FlowPort("Flow Out", PortDirection.Output, -1, this) }; // Add flow port first
                 var method = GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                 if (method != null)
