@@ -8,6 +8,7 @@ using Prowl.Icons;
 using Prowl.Runtime;
 using Prowl.Runtime.GUI;
 using Prowl.Runtime.Nodes;
+using Prowl.Runtime.Nodes.Scripting;
 using Prowl.Runtime.Nodes.Shader;
 using Prowl.Runtime.Resources;
 
@@ -72,7 +73,7 @@ public class NodeGraphEditorWindow : EditorWindow
         // DEBUG: Make node on space
         if (gui.IsKeyPressed(Key.Space))
         {
-            var newNode = new Texture2DNode();
+            var newNode = new LogNode();
             newNode.OnPortClicked += HandlePortClicked;
             OpenedGraph.Nodes.Add(newNode);
         }
