@@ -12,7 +12,7 @@ namespace Prowl.Runtime.Nodes.Scripting;
 /// </summary>
 public class NextNodePort : NodePort
 {
-    public NextNodePort(string name, PortDirection dir, int index) : base(name, dir, index) { }
+    public NextNodePort(string name, PortDirection dir, int index, Node node) : base(name, dir, index, node) { }
 
     public NextNodePort() : base() { }
 

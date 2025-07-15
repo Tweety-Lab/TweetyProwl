@@ -24,6 +24,9 @@ public class NodePort
     [SerializeIgnore]
     public Vector2 Position;
 
+    // Owning Node
+    public Node Node;
+
     public List<NodePort> ConnectedPorts = new List<NodePort>();
 
     public NodePort()
@@ -31,11 +34,12 @@ public class NodePort
 
     }
 
-    public NodePort(string name, PortDirection dir, int index)
+    public NodePort(string name, PortDirection dir, int index, Node node)
     {
         Name = name;
         Direction = dir;
         Index = index;
+        Node = node;
     }
 
     public virtual void Draw(Gui gui)

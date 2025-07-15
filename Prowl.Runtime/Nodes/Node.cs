@@ -28,8 +28,8 @@ public class Node
     public virtual Color Color { get; set; } = new Color(51, 104, 176, 255);
 
     // IO
-    public virtual List<NodePort> Inputs { get; } = [new NodePort("Test Input", PortDirection.Input, 0)];
-    public virtual List<NodePort> Outputs { get; } = [new NodePort("Test Output", PortDirection.Output, 0)];
+    public virtual List<NodePort> Inputs { get; }
+    public virtual List<NodePort> Outputs { get; }
 
     /// <summary>
     /// Runs when a Node connection port is clicked.

@@ -80,4 +80,8 @@
     <ProjectReference Include="..\External\Prowl.Veldrid\src\Veldrid.StartupUtilities\Veldrid.StartupUtilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Nodes\Shader\" />
+  </ItemGroup>
+
 </Project>

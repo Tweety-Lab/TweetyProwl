@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
 using System.Linq;
+
+using Prowl.Runtime.Nodes;
 using Prowl.Runtime.Nodes.Scripting;
 
 namespace Prowl.Runtime.Resources;
@@ -16,11 +18,43 @@ public class ScriptGraph : NodeGraph
     /// </summary>
     public void Invoke()
     {
-        // The start point of the script is the first found OnInvokeNode
-        OnInvokeNode node = Nodes.First(n => n is OnInvokeNode) as OnInvokeNode;
-        if (node == null)
+        // Start from the first OnInvokeNode
+        var entryNode = Nodes.FirstOrDefault(n => n is OnInvokeNode) as OnInvokeNode;
+        if (entryNode == null)
             return;
 
-        node.NextNode.Execute();
+        // Find the first output-type NextNodePort from the entry node
+        var startingPort = entryNode.Outputs.OfType<NextNodePort>().FirstOrDefault(p => p.Direction == PortDirection.Output);
+        if (startingPort == null)
+            return;
+
+        // Traverse and execute each node in sequence
+        ScriptNode current = GetNextScriptNode(startingPort);
+        while (current != null)
+        {
+            current.Execute();
+
+            var nextOutputPort = current.Outputs.OfType<NextNodePort>().FirstOrDefault(p => p.Direction == PortDirection.Output);
+            current = GetNextScriptNode(nextOutputPort);
+        }
+    }
+
+    /// <summary>
+    /// Gets the next ScriptNode connected to a given NextNodePort.
+    /// </summary>
+    private ScriptNode GetNextScriptNode(NextNodePort port)
+    {
+        if (port == null)
+            return null;
+
+        var connected = port.ConnectedPorts?.FirstOrDefault();
+        if (connected == null)
+            return null;
+
+        var nextNode = connected.Node as ScriptNode;
+        if (nextNode == null)
+            return null;
+
+        return nextNode;
     }
 }
