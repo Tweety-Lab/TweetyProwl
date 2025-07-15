@@ -42,7 +42,13 @@ public class ScriptNode : Node
             var method = GetType().GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             if (method != null)
-                ports.Add(new NodePort(RuntimeUtils.Prettify(method.ReturnType.Name), PortDirection.Output, ports.Count));
+            {
+                var returnType = method.ReturnType;
+
+                // Only add a port if the return type is not void or explicitly object (aka unknown)
+                if (returnType != typeof(void) && returnType != typeof(object))
+                    ports.Add(new NodePort(RuntimeUtils.Prettify(returnType.Name), PortDirection.Output, ports.Count));
+            }
 
             return ports;
         }

@@ -1,6 +1,8 @@
 ﻿// This file is part of the Prowl Game Engine
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
+using Prowl.Icons;
+
 namespace Prowl.Runtime.Nodes.Scripting;
 
 /// <summary>
@@ -8,12 +10,14 @@ namespace Prowl.Runtime.Nodes.Scripting;
 /// </summary>
 public class LogNode : ScriptNode
 {
+    public override string Name => $"{FontAwesome6.EnvelopeOpenText}    Log Message";
+    public override Color Color => new(50, 135, 80);
+
     public string Message;
 
-    public override string Execute()
+    public override object? Execute()
     {
         Debug.Log(Message);
-
-        return "None";
+        return null;
     }
 }
