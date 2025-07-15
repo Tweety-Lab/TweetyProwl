@@ -14,10 +14,11 @@ public class ErrorNode : ScriptNode
 
     public override Color Color => new(222, 70, 62);
 
+    public string Message;
+
     public override object? Execute()
     {
         Debug.LogError("Error Node Fired!");
-
         return null;
     }
 }
