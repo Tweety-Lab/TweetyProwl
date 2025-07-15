@@ -35,7 +35,6 @@ public class Node
     /// </summary>
     public Action<NodePort> OnPortClicked { get; set; }
 
-
     /// <summary>
     /// Position of the Node in the Graph.
     /// </summary>

@@ -59,20 +59,25 @@ public class NodeGraphEditorWindow : EditorWindow
         {
             gui.Draw2D.DrawRectFilled(gui.CurrentNode.LayoutData.Rect, EditorStylePrefs.Instance.Borders);
             if (EditorGUI.StyledButton(FontAwesome6.Plus + " Add Node", 80, 25, false))
-                OpenedGraph.Nodes.Add(new Node());
+            {
+                var newNode = new Node();
+                newNode.OnPortClicked += HandlePortClicked;
+                OpenedGraph.Nodes.Add(newNode);
+            }
 
             if (EditorGUI.StyledButton(FontAwesome6.FloppyDisk, 25, 25, false))
                 AssetDatabase.SaveAsset(OpenedGraph);
         }
 
         // DEBUG: Make node on space
-        if (gui.IsKeyPressed(Runtime.Key.Space))
-            OpenedGraph.Nodes.Add(new Texture2DNode());
+        if (gui.IsKeyPressed(Key.Space))
+        {
+            var newNode = new Texture2DNode();
+            newNode.OnPortClicked += HandlePortClicked;
+            OpenedGraph.Nodes.Add(newNode);
+        }
 
-        // Node Area
-        using (gui.Node("NodeArea").Layout(LayoutType.None).Expand().Enter())
-            for (int i = 0; i < OpenedGraph.Nodes.Count; i++)
-                OpenedGraph.Nodes[i].Draw(gui, _globalPortPositions, i);
+        DrawNodeArea();
 
         // Draw all connections
         foreach (var node in OpenedGraph.Nodes)
@@ -117,5 +122,12 @@ public class NodeGraphEditorWindow : EditorWindow
 
         Console.WriteLine($"Connected {_selectedPort.Name} to {port.Name}");
         _selectedPort = null;
+    }
+
+    private void DrawNodeArea()
+    {
+        using (gui.Node("NodeArea").Layout(LayoutType.None).Expand().Enter())
+            for (int i = 0; i < OpenedGraph.Nodes.Count; i++)
+                OpenedGraph.Nodes[i].Draw(gui, _globalPortPositions, i);
     }
 }
