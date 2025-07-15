@@ -41,6 +41,11 @@ public class NodePort
             gui.Draw2D.DrawCircle(Position, 5f, Color.white, thickness: 2.5f);
     }
 
+    /// <summary>
+    /// Returns true if the port can be connected to.
+    /// </summary>
+    public virtual bool CanConnectTo(NodePort other) => true;
+
     public virtual void ConnectTo(NodePort other)
     {
         if (!ConnectedPorts.Contains(other))

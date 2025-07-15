@@ -43,22 +43,5 @@ public class NextNodePort : NodePort
         }
     }
 
-    public override void ConnectTo(NodePort other)
-    {
-        // Flow ports can only connect to other flow ports
-        if (other is not NextNodePort)
-            return;
-
-        if (!ConnectedPorts.Contains(other))
-        {
-            ConnectedPorts.Add(other);
-            Console.WriteLine($"[Connect] {Name} -> {other.Name}");
-        }
-
-        if (!other.ConnectedPorts.Contains(this))
-        {
-            other.ConnectedPorts.Add(this);
-            Console.WriteLine($"[Connect] {other.Name} <- {Name}");
-        }
-    }
+    public override bool CanConnectTo(NodePort other) => other is NextNodePort;
 }

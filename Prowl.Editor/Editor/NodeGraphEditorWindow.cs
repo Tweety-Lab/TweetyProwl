@@ -117,9 +117,9 @@ public class NodeGraphEditorWindow : EditorWindow
             return;
         }
 
-        if (_selectedPort.Direction == PortDirection.Output && port.Direction == PortDirection.Input)
+        if (_selectedPort.Direction == PortDirection.Output && port.Direction == PortDirection.Input && port.CanConnectTo(_selectedPort))
             _selectedPort.ConnectTo(port);
-        else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input)
+        else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input && _selectedPort.CanConnectTo(port))
             port.ConnectTo(_selectedPort);
 
         _selectedPort = null;
