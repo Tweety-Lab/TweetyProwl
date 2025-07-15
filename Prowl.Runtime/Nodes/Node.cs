@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 using Prowl.Icons;
 using Prowl.Runtime.GUI;
+using Prowl.Runtime.GUI.Layout;
 
 namespace Prowl.Runtime.Nodes;
 
@@ -51,7 +52,9 @@ public class Node
     /// </summary>
     public virtual void Draw(Gui gui, Dictionary<NodePort, Vector2> ports, int id)
     {
-        using (gui.Node("Node", id).Width(200).Height(100).Left(Position.x).Top(Position.y).Layout(LayoutType.Column).Enter())
+        // Calculate height based off port count
+        float height = CalculateNodeHeight(Inputs.Count, Outputs.Count);
+        using (gui.Node("Node", id).Width(200).Height(height).Left(Position.x).Top(Position.y).Layout(LayoutType.Column).Enter())
         {
             // Header
             using (gui.Node("Header", id).Height(20).ExpandWidth().Enter())
@@ -148,5 +151,19 @@ public class Node
             if (gui.IsPointerClick() && gui.IsNodeHovered(selectionRect))
                 OnPortClicked?.Invoke(port);
         }
+    }
+
+    private float CalculateNodeHeight(int inputCount, int outputCount)
+    {
+        const float portHeight = 20f;
+        const float portSpacing = 5f;
+        const float headerHeight = 20f;
+        const float bodyPadding = 1f;
+
+        float inputHeight = inputCount > 0 ? inputCount * portHeight + (inputCount - 1) * portSpacing : 0;
+        float outputHeight = outputCount > 0 ? outputCount * portHeight + (outputCount - 1) * portSpacing : 0;
+
+        float maxPortHeight = Math.Max(inputHeight, outputHeight);
+        return headerHeight + maxPortHeight + bodyPadding * 2;
     }
 }

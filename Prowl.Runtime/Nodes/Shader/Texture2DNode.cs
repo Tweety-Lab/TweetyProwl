@@ -11,7 +11,7 @@ public class Texture2DNode : Node
 {
     public override string Name => $"{FontAwesome6.Camera}  Texture2D";
 
-    public override List<NodePort> Outputs => [new NodePort("Texture", PortDirection.Output, 0)];
+    public override List<NodePort> Outputs => [new NodePort("Texture", PortDirection.Output, 0), new NodePort("Sampler", PortDirection.Output, 1)];
 
     public override Color Color => new(235, 64, 52, 255);
 }
