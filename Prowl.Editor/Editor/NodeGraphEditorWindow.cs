@@ -1,7 +1,6 @@
 ﻿// This file is part of the Prowl Game Engine
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
-using Prowl.Echo;
 using Prowl.Editor.Assets;
 using Prowl.Editor.Preferences;
 using Prowl.Icons;
@@ -9,10 +8,7 @@ using Prowl.Runtime;
 using Prowl.Runtime.GUI;
 using Prowl.Runtime.Nodes;
 using Prowl.Runtime.Nodes.Scripting;
-using Prowl.Runtime.Nodes.Shader;
 using Prowl.Runtime.Resources;
-
-using SharpGen.Runtime;
 
 namespace Prowl.Editor.Editor;
 
