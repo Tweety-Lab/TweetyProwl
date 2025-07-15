@@ -43,5 +43,6 @@ public class NextNodePort : NodePort
         }
     }
 
+    // Flow Ports can only connect to Flow ports
     public override bool CanConnectTo(NodePort other) => other is NextNodePort;
 }

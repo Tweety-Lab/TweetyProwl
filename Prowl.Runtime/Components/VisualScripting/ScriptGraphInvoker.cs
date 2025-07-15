@@ -13,6 +13,6 @@ public class ScriptGraphInvoker : MonoBehaviour
     [Tooltip("The script graph to invoke on Update.")]
     public ScriptGraph OnUpdate;
 
-    public override void Start() => OnStart.Invoke();
-    public override void Update() => OnUpdate.Invoke();
+    public override void Start() => OnStart?.Invoke();
+    public override void Update() => OnUpdate?.Invoke();
 }
