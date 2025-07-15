@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using Prowl.Echo;
+using Prowl.Runtime.GUI;
 
 namespace Prowl.Runtime.Nodes;
 
@@ -32,7 +33,15 @@ public class NodePort
         Index = index;
     }
 
-    public void ConnectTo(NodePort other)
+    public virtual void Draw(Gui gui)
+    {
+        if (ConnectedPorts.Count > 0)
+            gui.Draw2D.DrawCircleFilled(Position, 5f, Color.white);
+        else
+            gui.Draw2D.DrawCircle(Position, 5f, Color.white, thickness: 2.5f);
+    }
+
+    public virtual void ConnectTo(NodePort other)
     {
         if (!ConnectedPorts.Contains(other))
         {
@@ -47,7 +56,7 @@ public class NodePort
         }
     }
 
-    public void DisconnectFrom(NodePort other)
+    public virtual void DisconnectFrom(NodePort other)
     {
         ConnectedPorts.Remove(other);
         other.ConnectedPorts.Remove(this);

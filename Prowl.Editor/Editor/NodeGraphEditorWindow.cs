@@ -69,8 +69,6 @@ public class NodeGraphEditorWindow : EditorWindow
                 AssetDatabase.SaveAsset(OpenedGraph);
         }
 
-        DrawNodeArea();
-
         // DEBUG: Make node on space
         if (gui.IsKeyPressed(Key.Space))
         {
@@ -79,6 +77,7 @@ public class NodeGraphEditorWindow : EditorWindow
             OpenedGraph.Nodes.Add(newNode);
         }
 
+        DrawNodeArea();
         DrawNodeConnections();
     }
 

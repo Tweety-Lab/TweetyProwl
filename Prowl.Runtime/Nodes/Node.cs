@@ -135,9 +135,7 @@ public class Node
                 port.Position = basePos + new Vector2(0, socketOffsetY);
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
-                gui.Draw2D.DrawCircle(port.Position, socketRadius, Color.white, thickness: 2.5f);
-                if (port.ConnectedPorts.Count > 0)
-                    gui.Draw2D.DrawCircleFilled(port.Position, socketRadius, Color.white);
+                port.Draw(gui);
             }
             else
             {
@@ -146,9 +144,7 @@ public class Node
 
                 gui.Draw2D.DrawText(port.Name, 14, textPos, Color.white);
                 gui.Node("Spacer").Expand();
-                gui.Draw2D.DrawCircle(port.Position, socketRadius, Color.white, thickness: 2.5f);
-                if (port.ConnectedPorts.Count > 0)
-                    gui.Draw2D.DrawCircleFilled(port.Position, socketRadius, Color.white);
+                port.Draw(gui);
             }
 
             Rect selectionRect = new Rect(port.Position.x - 5f, port.Position.y - 5f, 10f, 10f);
