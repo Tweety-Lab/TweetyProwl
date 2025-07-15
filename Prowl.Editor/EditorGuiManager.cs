@@ -519,6 +519,26 @@ public static class EditorGuiManager
         AssetDatabase.Ping(file);
     }
 
+    [MenuItem("Assets/Create/Script Graph")]
+    public static void CreateScriptGraph()
+    {
+        Directory ??= Project.Active.AssetDirectory;
+
+        FileInfo file = new FileInfo(Path.Combine(Directory.FullName, $"New Script Graph.sgraph"));
+        AssetDatabase.GenerateUniqueAssetPath(ref file);
+
+        ScriptGraph graph = new ScriptGraph();
+        Serializer.Serialize(graph).WriteToString(file);
+
+        if (fromAssetBrowser)
+            AssetsBrowserWindow.StartRename(file.FullName);
+        else
+            AssetsTreeWindow.StartRename(file.FullName);
+
+        AssetDatabase.Update();
+        AssetDatabase.Ping(file);
+    }
+
 
     [MenuItem("Assets/Create/Prefab")]
     public static void CreatePrefab()
