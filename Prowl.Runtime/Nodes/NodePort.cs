@@ -30,6 +30,7 @@ public class NodePort
     {
         if (!ConnectedPorts.Contains(other))
             ConnectedPorts.Add(other);
+
         if (!other.ConnectedPorts.Contains(this))
             other.ConnectedPorts.Add(this);
     }

@@ -1,6 +1,7 @@
 ﻿// This file is part of the Prowl Game Engine
 // Licensed under the MIT License. See the LICENSE file in the project root for details.
 
+using Prowl.Echo;
 using Prowl.Editor.Assets;
 using Prowl.Editor.Preferences;
 using Prowl.Icons;
@@ -37,7 +38,7 @@ public class NodeGraphEditorWindow : EditorWindow
             {
                 if (_selectedPort != null && _selectedPort != port)
                 {
-                    // Only connect output -> input
+                    // Only connect output to input
                     if (_selectedPort.Direction == PortDirection.Output && port.Direction == PortDirection.Input)
                         _selectedPort.ConnectTo(port);
                     else if (port.Direction == PortDirection.Output && _selectedPort.Direction == PortDirection.Input)
@@ -99,7 +100,7 @@ public class NodeGraphEditorWindow : EditorWindow
         // Draw all connections
         foreach (var node in OpenedGraph.Nodes)
         {
-            foreach (var port in node.Outputs) // Only outputs to avoid double
+            foreach (var port in node.Outputs) // Only outputs to avoid double lines
             {
                 foreach (var connected in port.ConnectedPorts)
                 {
@@ -113,6 +114,16 @@ public class NodeGraphEditorWindow : EditorWindow
                         gui.Draw2D.DrawBezierLine(a, controlA, b, controlB, Color.white, 3f);
                     }
                 }
+            }
+        }
+
+        // Draw connection from selected port to mouse
+        if (_selectedPort != null)
+        {
+            if (_globalPortPositions.TryGetValue(_selectedPort, out var from))
+            {
+                Vector2 to = gui.PointerPos;
+                gui.Draw2D.DrawLine(from, to, Color.white, 3f);
             }
         }
     }
