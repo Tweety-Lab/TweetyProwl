@@ -14,4 +14,6 @@ public class OnInvokeNode : ScriptNode
     public override string Name => $"{FontAwesome6.Play}   OnInvoke";
 
     public override Color Color => new(92, 85, 83);
+
+    public override bool AcceptInput => false;
 }

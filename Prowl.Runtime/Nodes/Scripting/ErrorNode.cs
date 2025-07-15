@@ -6,18 +6,17 @@ using Prowl.Icons;
 namespace Prowl.Runtime.Nodes.Scripting;
 
 /// <summary>
-/// Logs a message to the console.
+/// Logs an error to the console.
 /// </summary>
-public class LogNode : ScriptNode
+public class ErrorNode : ScriptNode
 {
-    public override string Name => $"{FontAwesome6.EnvelopeOpenText}    Log Message";
-    public override Color Color => new(50, 135, 80);
+    public override string Name => $"{FontAwesome6.X}   Log Error";
 
-    public string Message;
+    public override Color Color => new(222, 70, 62);
 
     public override object? Execute()
     {
-        Debug.Log("Log Node Fired!");
+        Debug.LogError("Error Node Fired!");
 
         return null;
     }
